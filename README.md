@@ -18,10 +18,14 @@ cargoを使ってsheldonをインストールする。
 mkdir -p ~/.cargo/bin
 cargo install sheldon
 ```
-
 ## neovim
 プラグインマネージャにlazy.nvimを採用。
 また、init.luaは分割して管理。
 
+## tmux 
+tmuxのインストールも各ＯＳに応じた方法で行う。
+基本的にターミナルエミュレータのタブ機能などは使わず、tmuxを使っている。
+
 ## rofi
 ランチャー。少しだけカスタマイズしている。
+でもMacOSの時はraycastを、Windowsの時はPowerToysのランチャーを使っている。
