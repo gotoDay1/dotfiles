@@ -1,0 +1,9 @@
+# for macOS
+.DS_Store
+# log ファイル
+*.log
+log.*
+# ローカルで作成されるファイル
+lazy-lock.json
+# git にはあげないzshの設定ファイル
+.zsh/myzshrc.zsh

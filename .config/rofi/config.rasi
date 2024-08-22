@@ -1,0 +1,10 @@
+configuration {
+  modi: "drun,window,run,system:~/.config/rofi/rofi_system.sh";
+  combi-modi: "drun,run,window";
+  sidebar-mode:  true;
+  hide-scrollbar: true;
+  kb-cancel: "Escape,Control+bracketleft";
+  kb-mode-previous: "Ctrl+I";
+  kb-mode-next: "Ctrl+i";
+}
+@theme "/usr/share/rofi/themes/Arc-Dark.rasi"
