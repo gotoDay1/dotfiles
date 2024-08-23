@@ -1,6 +1,6 @@
 #! /bin/bash
 
-slinkfiles=(.vimrc .tmux.conf .zsh .wezterm.lua)
+slinkfiles=(.vimrc .tmux.conf .zsh)
 for file in "${slinkfiles[@]}"; do
     ln -svf $PWD/$file ~/
 done
