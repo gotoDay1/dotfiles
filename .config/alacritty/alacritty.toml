@@ -1,3 +1,10 @@
 [window]
 dynamic_title = false
 title = "Alacritty"
+opacity = 0.9
+
+[font]
+size = 12
+
+[font.normal]
+family = "HackGen35ConsoleNF"

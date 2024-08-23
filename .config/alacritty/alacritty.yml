@@ -1,6 +1,0 @@
-window:
-  # 動的なウィンドウタイトルの使用を無効化
-  dynamic_title: false
-  # ウィンドウタイトルを固定
-  title: "Alacritty"
-
