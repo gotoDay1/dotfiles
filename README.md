@@ -8,6 +8,9 @@
 ## zsh
 プラグインマネージャにsheldonを採用。rust製のため、`cargo`が実行可能がどうかをチェック。
 
+### zoxide
+debian系なら`apt install zoxide`で入れられる。
+
 ### sheldon のインストール
 まずはrustをインストールする。
 ```bash
