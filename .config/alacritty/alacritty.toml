@@ -1,5 +1,7 @@
 # theme
-import = ["~/.config/alacritty/themes/themes/gruvbox_dark.toml"]
+import = [
+    "~/dotfiles/.config/alacritty/themes/themes/gruvbox_dark.toml"
+    ]
 
 [window]
 dynamic_title = false
@@ -7,7 +9,7 @@ title = "Alacritty"
 opacity = 0.9
 
 [font]
-size = 12
+size = 11
 
 [font.normal]
 family = "HackGen35ConsoleNF"
