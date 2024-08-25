@@ -10,7 +10,7 @@ for file in "${cpfiles[@]}";do
     cp $PWD/$file ~/
 done
 
-contents=(sheldon nvim rofi)
+contents=(sheldon nvim rofi alacritty)
 for config in "${contents[@]}"; do
     ln -svf $PWD/.config/$config ~/.config
 done
