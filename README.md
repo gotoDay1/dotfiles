@@ -1,12 +1,20 @@
 # dotfiles
 
 基本的な構成は以下の通り。
+- alacrittu: terminal emulator
+- HackGen: Font
 - zsh : Shell
 - neovim : テキストエディタ
 - rofi : ランチャー
 
+# 
+
+# ソフトウェア
 ## zsh
 プラグインマネージャにsheldonを採用。rust製のため、`cargo`が実行可能がどうかをチェック。
+
+### zoxide
+debian系なら`apt install zoxide`で入れられる。
 
 ### sheldon のインストール
 まずはrustをインストールする。
