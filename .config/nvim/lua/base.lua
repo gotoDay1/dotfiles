@@ -54,8 +54,8 @@ vim.cmd("highlight SignColumn ctermbg=none guibg=none")
 vim.cmd("highlight EndOfBuffer ctermbg=none guibg=none")
 
 local home = os.getenv("HOME")
-vim.g.python3_host_prog = home .. "/.venv/coc/bin/python3"
-vim.g.python_host_prog = home .. "/.venv/coc/bin/python"
+--vim.g.python3_host_prog = home .. "/.venv/coc/bin/python3"
+--vim.g.python_host_prog = home .. "/.venv/coc/bin/python"
 --
 -- Coc
 vim.cmd [[

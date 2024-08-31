@@ -4,6 +4,9 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+-- 邪魔なキーマップを無効化
+vim.api.nvim_set_keymap('i', '<Nul>', '<Nop>', { noremap = true, silent = true })
+
 -- Modes
 --   normal_mode = 'n',
 --   insert_mode = 'i',
