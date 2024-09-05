@@ -9,8 +9,8 @@ title = "Alacritty"
 opacity = 0.9
 
 [font]
-size = 11
+size = 16
 
 [font.normal]
-family = "HackGen35ConsoleNF"
+family = "HackGen35 Console NF"
 
