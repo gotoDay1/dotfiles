@@ -14,3 +14,10 @@ size = 16
 [font.normal]
 family = "HackGen35 Console NF"
 
+[shell]
+program = "/bin/zsh"
+args = [
+  "-l",
+  "-c",
+  "tmux a -t main || tmux new -s main",
+]
