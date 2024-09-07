@@ -10,7 +10,7 @@
         },
         "jedi": {
             "enable": true,
-            "command": "jedi-language-server",
+            "command": "~/.config/coc/extensions/node_modules/coc-jedi/.venv/bin/jedi-language-server",
             "filetypes": ["python"], 
             "rootPatterns": [".git/"]
         },

@@ -54,13 +54,17 @@ vim.cmd("highlight SignColumn ctermbg=none guibg=none")
 vim.cmd("highlight EndOfBuffer ctermbg=none guibg=none")
 
 local home = os.getenv("HOME")
---vim.g.python3_host_prog = home .. "/.venv/coc/bin/python3"
---vim.g.python_host_prog = home .. "/.venv/coc/bin/python"
---
+
 -- Coc
 vim.cmd [[
   autocmd FileType tex setlocal omnifunc=v:lua.vim.lsp.omnifunc
 ]]
 vim.g.coc_filetype_map = { tex = 'latex' }
 
+-- pyx は python として扱う
+vim.filetype.add({
+    extension = {
+        pyx = "python"
+    }
+})
 

@@ -1,7 +1,7 @@
 # dotfiles
 
 基本的な構成は以下の通り。
-- alacrittu: terminal emulator
+- alacritty: terminal emulator
 - HackGen: Font
 - zsh : Shell
 - neovim : テキストエディタ
