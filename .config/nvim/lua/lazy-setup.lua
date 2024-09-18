@@ -24,7 +24,7 @@ require("lazy").setup("plugins", {
       },
     },
   },
-    -- defaults = {
-    --     lazy = true,
-    -- },
+    defaults = {
+        lazy = true,
+    },
 })

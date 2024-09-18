@@ -22,7 +22,12 @@ return{
                 },
 
                 indent = {
+                    enable = true,
                     chars = { "│", "¦", "┆", "┊", }, -- more code can be found in https://unicodeplus.com/
+                },
+
+                line_num = {
+                    enable = true,
                 },
 
             })
