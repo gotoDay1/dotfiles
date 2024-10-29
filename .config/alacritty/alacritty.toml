@@ -21,3 +21,8 @@ args = [
   "-c",
   "tmux a -t main || tmux new -s main",
 ]
+
+[keyboard]
+bindings = [
+{ key = "¥", chars = "\\"}
+]
