@@ -1,7 +1,7 @@
 return {
     {
         "nvim-telescope/telescope.nvim",
-        tag = "0.1.6",
+        event = "UIEnter",
         config = function() -- Execute after plugin is loaded
             local builtin = require('telescope.builtin')
             vim.keymap.set('n', '<leader>ff', builtin.find_files, {})

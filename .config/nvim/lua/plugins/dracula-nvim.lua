@@ -1,6 +1,6 @@
 return{
     {
-        "Mofiqul/dracula.nvim"
+        "Mofiqul/dracula.nvim",
+        event = "UIEnter",
     }
 }
-        -- "savq/melange-nvim",

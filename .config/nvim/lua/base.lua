@@ -53,8 +53,6 @@ vim.cmd("highlight LineNr ctermbg=none guibg=none")
 vim.cmd("highlight SignColumn ctermbg=none guibg=none")
 vim.cmd("highlight EndOfBuffer ctermbg=none guibg=none")
 
-local home = os.getenv("HOME")
-
 -- Coc
 vim.cmd [[
   autocmd FileType tex setlocal omnifunc=v:lua.vim.lsp.omnifunc

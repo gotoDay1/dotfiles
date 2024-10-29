@@ -23,9 +23,17 @@ return{
 
                 indent = {
                     enable = true,
-                    chars = { "│", "¦", "┆", "┊", }, -- more code can be found in https://unicodeplus.com/
+                    chars = {
+                                "│",
+                                "¦",
+                                "┆",
+                                "┊",
+                            },
+                    style = {
+                                vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+                            },
                 },
-
+                
                 line_num = {
                     enable = true,
                 },
