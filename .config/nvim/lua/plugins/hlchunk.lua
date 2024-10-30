@@ -1,7 +1,7 @@
 return{
     {
         "shellRaining/hlchunk.nvim",
-        event = { "VimEnter" },
+        event = { "UIEnter" },
         config = function()
             require('hlchunk').setup({
                 chunk = {
@@ -18,11 +18,11 @@ return{
                 },
 
                 blank = {
-                    enable = false,
+                    enable = false, 
                 },
 
                 indent = {
-                    enable = true,
+                    enable = false,
                     chars = {
                                 "│",
                                 "¦",
