@@ -1,7 +1,7 @@
 return{
     {
         "shellRaining/hlchunk.nvim",
-        event = { "UIEnter" },
+        event = { "VimEnter" },
         config = function()
             require('hlchunk').setup({
                 chunk = {
