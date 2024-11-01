@@ -36,6 +36,7 @@ return{
                 
                 line_num = {
                     enable = true,
+                    use_treesitter = true,
                 },
 
             })
