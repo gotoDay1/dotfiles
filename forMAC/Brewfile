@@ -1,0 +1,6 @@
+brew "neovim"
+brew "sheldon"
+brew "tmux", args: ["HEAD"]
+cask "vivaldi"
+cask "alacritty"
+cask "obsidian"
