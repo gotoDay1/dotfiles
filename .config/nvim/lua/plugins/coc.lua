@@ -2,7 +2,7 @@ return {
     {
         "neoclide/coc.nvim",
         branch = "release",
-        lazy = false,
+        event = "VimEnter",
 
         config = function()
             local keyset = vim.keymap.set

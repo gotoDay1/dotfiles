@@ -18,16 +18,25 @@ return{
                 },
 
                 blank = {
-                    enable = false,
+                    enable = false, 
                 },
 
                 indent = {
-                    enable = true,
-                    chars = { "│", "¦", "┆", "┊", }, -- more code can be found in https://unicodeplus.com/
+                    enable = false,
+                    chars = {
+                                "│",
+                                "¦",
+                                "┆",
+                                "┊",
+                            },
+                    style = {
+                                vim.fn.synIDattr(vim.fn.synIDtrans(vim.fn.hlID("Whitespace")), "fg", "gui"),
+                            },
                 },
-
+                
                 line_num = {
                     enable = true,
+                    use_treesitter = true,
                 },
 
             })
