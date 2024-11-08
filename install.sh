@@ -4,7 +4,15 @@ if [ ! -d ~/.config ]; then
     mkdir ~/.config
 fi
 
-slinkfiles=(.vimrc .tmux.conf .zsh)
+if [ ! -d ~/.zsh ]; then
+    mkdir ~/.zsh
+fi
+slinkfiles=(.zsh/*)
+for file in "${slinkfiles[@]}"; do
+    ln -svf $PWD/$file ~/.zsh/
+done
+
+slinkfiles=(.vimrc .tmux.conf)
 for file in "${slinkfiles[@]}"; do
     ln -svf $PWD/$file ~/
 done
