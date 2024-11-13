@@ -1,90 +1,111 @@
 return {
-    -- Denopsは他のプラグインより先に読み込む必要があります
     {
         "vim-denops/denops.vim",
         lazy = false,
-        priority = 1000,
+        priority = 100,
+        config = function()
+            local home = os.getenv("HOME")
+            vim.g["denops#deno"] = home .. "/.deno/bin/deno"
+        end,
     },
-    -- pum.vimはポップアップメニューを提供します
     {
         "Shougo/pum.vim",
         lazy = false,
+        priority = 10,
+        config = function()
+            vim.cmd([[
+                inoremap <C-n>   <Cmd>call pum#map#insert_relative(+1)<CR>
+                inoremap <C-p>   <Cmd>call pum#map#insert_relative(-1)<CR>
+                inoremap <C-y>   <Cmd>call pum#map#confirm()<CR>
+                inoremap <C-e>   <Cmd>call pum#map#cancel()<CR>
+                inoremap <PageDown> <Cmd>call pum#map#insert_relative_page(+1)<CR>
+                inoremap <PageUp>   <Cmd>call pum#map#insert_relative_page(-1)<CR>
+            ]])
+        end,
     },
-    -- lsp
-    {
-        "neovim/nvim-lspconfig",
-        lazy = false,
-    },
-    -- ddc.vimと関連プラグイン
     {
         "Shougo/ddc.vim",
+        event = "InsertEnter",
         dependencies = {
-            "Shougo/ddc-ui-pum",
             "Shougo/ddc-source-around",
+            "Shougo/ddc-ui-pum",
+            "Shougo/ddc-matcher_head",
+            "tani/ddc-fuzzy",
+            "Shougo/ddc-sorter_rank",
+            "Shougo/ddc-nvim-lsp",
             "Shougo/ddc-source-lsp",
-            "uga-rosa/ddc-source-lsp-setup",
-            "Shougo/ddc-filter-matcher_head",
-            "Shougo/ddc-filter-sorter_rank",
-            "hrsh7th/vim-vsnip",                   -- スニペットエンジン
         },
-        event = {"InsertEnter"},
         config = function()
-            -- LSPサーバーの設定
-            local lspconfig = require("lspconfig")
-            local capabilities = vim.fn["ddc#lsp#make_client_capabilities"]()
-
-            -- 例としてdenolsを設定（他のサーバーも同様に設定可能）
-            lspconfig.denols.setup({
-                capabilities = capabilities,
+            local capabilities = require("ddc_source_lsp").make_client_capabilities()
+            require("lspconfig").denols.setup({
+              capabilities = capabilities,
             })
-            -- fortran
-            lspconfig.intelephense.setup({
-                capabilities = capabilities,
+            vim.cmd([[
+                " DDCのUIを設定 (pumを使う)
+                call ddc#custom#patch_global('ui', 'pum')
+
+                " 使用する補完ソースの設定
+                call ddc#custom#patch_global('sources', ["nvim-lsp", 'around'])
+
+                " 使用するフィルターの設定
+                call ddc#custom#patch_global('sourceOptions', {
+                    \ '_': {
+                    \   'matchers': ['matcher_head', 'matcher_fuzzy'],
+                    \   "sorters": ["sorter_fuzzy", "sorter_rank"],
+                    \   "converters": ["converter_fuzzy"],
+                    \ },
+                    \ 'around': {
+                    \   'mark': 'A',
+                    \ },
+                    \ "nvim-lsp": {
+                    \ "mark": "LSP",
+                    \ "forceCompletionPattern": '\.\w*|:\w*|->\w*'
+                    \ },
+                \ })
+
+                " 補完のキーバインド設定（Enterキーで確定）
+                inoremap <silent><expr> <CR> pumvisible() ? ddc#accept() : "\<C-g>u\<CR>"
+
+                " DDCを有効化
+                call ddc#enable()
+            ]])
+        end,
+    },
+    -- MasonとLSPの設定
+    {
+        "williamboman/mason.nvim",
+        lazy = false,
+        config = function()
+            require("mason").setup()
+        end,
+    },
+    { "williamboman/mason-lspconfig.nvim",
+        lazy = false,
+        config = function()
+            require("mason-lspconfig").setup({
+                ensure_installed = {
+                    "fortls",
+                    "pylsp",
+                }
             })
+        end,
+    },
+    {
+        "neovim/nvim-lspconfig",
+        event = "BufEnter",
+        config = function()
+            local lspconfig = require('lspconfig')
+            local capabilities = require('ddc_nvim_lsp').make_client_capabilities()
+            local mason_lspconfig = require('mason-lspconfig')
 
-            -- DDCのグローバル設定
-            local patch_global = vim.fn["ddc#custom#patch_global"]
-
-            -- ソースの設定（'lsp'を追加）
-            patch_global("sources", {"lsp", "around"})
-
-            -- ソースオプションの設定
-            patch_global("sourceOptions", {
-                ["_"] = {
-                    matchers = {"matcher_head"},
-                    sorters = {"sorter_rank"},
-                },
-                ["lsp"] = {
-                    mark = "lsp",
-                    forceCompletionPattern = '\\.\\w*|:\\w*|->\\w*',
-                },
+            -- LSPサーバーの自動設定
+            mason_lspconfig.setup_handlers({
+                function(server_name)
+                    lspconfig[server_name].setup({
+                        capabilities = capabilities,
+                    })
+                end,
             })
-
-            -- ソースパラメータの設定
-            patch_global("sourceParams", {
-                ["lsp"] = {
-                    snippetEngine = vim.fn["denops#callback#register"](function(body)
-                        return vim.fn["vsnip#anonymous"](body)
-                    end),
-                    enableResolveItem = true,
-                    enableAdditionalTextEdit = true,
-                },
-            })
-
-            -- その他の設定
-            patch_global({
-                ui = "pum",
-                autoCompleteEvents = {"InsertEnter", "TextChangedI", "TextChangedP"},
-            })
-
-            -- DDCを有効化
-            vim.fn["ddc#enable"]()
-
-            -- キーマッピングの設定（Ctrl-n と Ctrl-p を使用）
-            vim.api.nvim_set_keymap("i", "<C-n>", "<Cmd>call pum#map#insert_relative(+1)<CR>", {noremap = true, silent = true})
-            vim.api.nvim_set_keymap("i", "<C-p>", "<Cmd>call pum#map#insert_relative(-1)<CR>", {noremap = true, silent = true})
-            vim.api.nvim_set_keymap("i", "<expr><CR>", 'pum#map#confirm()', {expr = true, noremap = true})
         end,
     },
 }
-
