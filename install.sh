@@ -37,7 +37,7 @@ fi
 if [ ! -x "$(command -v cargo)" ]; then
     echo "cargo is not installed"
 fi
-if [ ! -x "$(command -v uv)"]; then
+if [ ! -x "$(command -v uv)" ]; then
     echo "uv is not installed"
 fi
 if [ ! -x "$(command -v tmux)" ]; then
