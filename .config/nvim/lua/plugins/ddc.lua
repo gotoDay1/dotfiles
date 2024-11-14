@@ -32,43 +32,56 @@ return {
             "Shougo/ddc-matcher_head",
             "tani/ddc-fuzzy",
             "Shougo/ddc-sorter_rank",
-            "Shougo/ddc-nvim-lsp",
             "Shougo/ddc-source-lsp",
+            "uga-rosa/ddc-source-lsp-setup",
         },
         config = function()
+            require("ddc_source_lsp_setup").setup()
             local capabilities = require("ddc_source_lsp").make_client_capabilities()
             require("lspconfig").denols.setup({
               capabilities = capabilities,
             })
-            vim.cmd([[
-                " DDCのUIを設定 (pumを使う)
-                call ddc#custom#patch_global('ui', 'pum')
 
-                " 使用する補完ソースの設定
-                call ddc#custom#patch_global('sources', ["nvim-lsp", 'around'])
+            -- Lua版のddc設定
+            vim.fn['ddc#custom#patch_global']({
+                ui = "pum",
+                sources = {"lsp", "around"},
+                sourceOptions = {
+                    ["_"] = {
+                        matchers = {"matcher_fuzzy"},
+                        sorters = {"sorter_fuzzy", "sorter_rank"},
+                        converters = {"converter_fuzzy"},
+                    },
+                    ["around"] = {
+                        mark = "A",
+                    },
+                    ["lsp"] = {
+                        dup = "keep",
+                        keywordPattern = [[\k+]],
+                        sorters = {"sorter_lsp-kind"},
+                        mark = "LSP",
+                        forceCompletionPattern = [[\.\w*|:\w*|->\w*]],
+                    },
+                },
+                sourceParams = {
+                    ["lsp"] = {
+                        snippetEngine = vim.fn['denops#callback#register'](function(body)
+                            return vim.fn['vsnip#anonymous'](body)
+                        end),
+                        enableResolveItem = true,
+                        enableAdditionalTextEdit = true,
+                        confirmBehavior = 'replace',
+                    },
+                },
+            })
 
-                " 使用するフィルターの設定
-                call ddc#custom#patch_global('sourceOptions', {
-                    \ '_': {
-                    \   'matchers': ['matcher_head', 'matcher_fuzzy'],
-                    \   "sorters": ["sorter_fuzzy", "sorter_rank"],
-                    \   "converters": ["converter_fuzzy"],
-                    \ },
-                    \ 'around': {
-                    \   'mark': 'A',
-                    \ },
-                    \ "nvim-lsp": {
-                    \ "mark": "LSP",
-                    \ "forceCompletionPattern": '\.\w*|:\w*|->\w*'
-                    \ },
-                \ })
+            -- 補完のキーバインド設定（Enterキーで確定）
+            vim.api.nvim_set_keymap("i", "<CR>",
+                'pumvisible() ? ddc#accept() : "\\<C-g>u\\<CR>"',
+                { noremap = true, silent = true, expr = true })
 
-                " 補完のキーバインド設定（Enterキーで確定）
-                inoremap <silent><expr> <CR> pumvisible() ? ddc#accept() : "\<C-g>u\<CR>"
-
-                " DDCを有効化
-                call ddc#enable()
-            ]])
+            -- DDCを有効化
+            vim.fn['ddc#enable']()
         end,
     },
     -- MasonとLSPの設定
@@ -79,33 +92,48 @@ return {
             require("mason").setup()
         end,
     },
-    { "williamboman/mason-lspconfig.nvim",
+    {
+        "williamboman/mason-lspconfig.nvim",
         lazy = false,
         config = function()
-            require("mason-lspconfig").setup({
-                ensure_installed = {
-                    "fortls",
-                    "pylsp",
-                }
+            local mason = require("mason")
+            local lspconfig = require("lspconfig")
+            local mason_lspconfig = require("mason-lspconfig")
+            mason.setup()
+            mason_lspconfig.setup()
+            mason_lspconfig.setup_handlers({
+                function(server_name)
+                    lspconfig[server_name].setup({})
+                end,
             })
         end,
     },
     {
         "neovim/nvim-lspconfig",
-        event = "BufEnter",
+        lazy = false,
+    },
+    {
+        "jose-elias-alvarez/null-ls.nvim",
+        lazy = false,
         config = function()
-            local lspconfig = require('lspconfig')
-            local capabilities = require('ddc_nvim_lsp').make_client_capabilities()
-            local mason_lspconfig = require('mason-lspconfig')
-
-            -- LSPサーバーの自動設定
-            mason_lspconfig.setup_handlers({
-                function(server_name)
-                    lspconfig[server_name].setup({
-                        capabilities = capabilities,
-                    })
-                end,
+            local null_ls = require("null-ls")
+            null_ls.setup({
+                sources = {
+                    null_ls.builtins.formatting.stylua,
+                    null_ls.builtins.diagnostics.eslint,
+                    null_ls.builtins.completion.spell,
+                },
             })
         end,
     },
+    {
+        "jay-babu/mason-null-ls.nvim",
+        event = { "BufReadPre", "BufNewFile" },
+        config = function()
+            require("mason-null-ls").setup({
+                ensure_installed = { "black" }, -- blackをインストール
+                handlers = {},
+            })
+        end,
+    }
 }
