@@ -5,7 +5,7 @@ title = "Alacritty"
 opacity = 0.9
 
 [font]
-size = 14
+size = 12
 
 [font.normal]
 family = "HackGen35ConsoleNF"
@@ -26,7 +26,7 @@ bindings = [
 [general]
 # theme
 import = [
-    "~/dotfiles/.config/alacritty/themes/themes/gruvbox_dark.toml"
+    "~/dotfiles/.config/alacritty/themes/themes/kanagawa_wave.toml"
     ]
 
 [terminal]
