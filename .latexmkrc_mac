@@ -5,7 +5,7 @@ $pdf_mode = 3;
 
 # pLaTeXを使う
 # -halt-on-error:初めのエラーで終わらせる
-$latex = 'uplatex %O %S -halt-on-error';
+$latex = 'pdflatex %O %S -halt-on-error';
 
 # pBibTeXを使う(参考文献)
 $bibtex = 'pbibtex %O %S';
