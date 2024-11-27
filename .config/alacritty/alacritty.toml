@@ -8,7 +8,8 @@ opacity = 0.9
 size = 14
 
 [font.normal]
-family = "HackGen35ConsoleNF"
+#family = "HackGen35 Console NF"
+family = "UDEV Gothic 35NFLG"
 
 [terminal.shell]
 program = "/bin/zsh"
