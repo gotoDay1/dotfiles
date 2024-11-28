@@ -1,6 +1,0 @@
-imgcat_for_tmux() {
-  imgcat "$1"
-  # ENTERで画像表示を終了できる。
-  read && clear && exit
-}
-alias imgcat='imgcat_for_tmux'
