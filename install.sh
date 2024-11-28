@@ -22,7 +22,7 @@ for file in "${cpfiles[@]}";do
     cp $PWD/$file ~/
 done
 
-contents=(sheldon nvim rofi alacritty)
+contents=(sheldon nvim rofi alacritty wezterm)
 for config in "${contents[@]}"; do
     ln -svf $PWD/.config/$config ~/.config
 done
@@ -37,7 +37,7 @@ fi
 if [ ! -x "$(command -v cargo)" ]; then
     echo "cargo is not installed"
 fi
-if [ ! -x "$(command -v uv)"]; then
+if [ ! -x "$(command -v uv)" ]; then
     echo "uv is not installed"
 fi
 if [ ! -x "$(command -v tmux)" ]; then
