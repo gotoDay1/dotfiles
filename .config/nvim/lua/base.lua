@@ -65,4 +65,3 @@ vim.filetype.add({
         pyx = "python"
     }
 })
-

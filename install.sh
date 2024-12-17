@@ -22,7 +22,7 @@ for file in "${cpfiles[@]}";do
     cp $PWD/$file ~/
 done
 
-contents=(sheldon nvim rofi alacritty)
+contents=(sheldon nvim rofi alacritty wezterm)
 for config in "${contents[@]}"; do
     ln -svf $PWD/.config/$config ~/.config
 done
@@ -49,3 +49,9 @@ fi
 if [ ! -x "$(command -v alacritty)" ]; then
     echo "alacritty is not installed"
 fi
+
+if [ ! -x "$(command -v deno)" ]; then
+    echo "deno is not installed, automatically install deno"
+    curl -fsSL https://deno.land/install.sh | sh
+fi
+
