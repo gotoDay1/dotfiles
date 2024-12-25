@@ -52,11 +52,6 @@ config.keys = {
     { key = "V", mods = "CTRL", action = act.PasteFrom("Clipboard") },
 
 }
-config.key_tables = {
-    copy_mode = {
-        { key = "Enter", mods = "NONE", action = act.Multiple{ { CopyTo = "ClipboardAndPrimarySelection" }, { CopyMode = "Close" } } },
-    },
-}
 
 -- Other
 config.use_ime = true 
