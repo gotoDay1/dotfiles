@@ -13,10 +13,10 @@ config.font = wezterm.font_with_fallback{
     "UDEV Gothic 35NFLG",
     "HackGen35 NF"
 }
-config.font_size = 13.0
+config.font_size = 14.0
 
 
--- Colorscheme and theme
+-- Appearance
 config.color_scheme = "Kanagawa (Gogh)" -- 自分の好きなテーマ探す https://wezfurlong.org/wezterm/colorschemes/index.html
 config.window_background_opacity = 0.85
 if wezterm.target_triple == "x86_64-apple-darwin" or wezterm.target_triple == "aarch64-apple-darwin" then
@@ -25,6 +25,10 @@ elseif wezterm.target_triple == "x86_64-pc-windows-msvc" then
     config.win32_system_backdrop = "acrylic"
 end
 config.show_new_tab_button_in_tab_bar = false
+config.window_decorations = "RESIZE"
+config.show_close_tab_button_in_tabs = false
+config.show_tab_index_in_tab_bar = false
+config.tab_bar_at_bottom = true
 
 -- keybindings
 -- 全部削除して自分で設定する
