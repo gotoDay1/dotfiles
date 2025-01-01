@@ -45,7 +45,7 @@ return {
             -- Lua版のddc設定
             vim.fn['ddc#custom#patch_global']({
                 ui = "pum",
-                sources = {"lsp", "around"},
+                sources = {"lsp", "around", "skkeleton"},
                 sourceOptions = {
                     ["_"] = {
                         matchers = {"matcher_fuzzy"},
@@ -61,6 +61,14 @@ return {
                         sorters = {"sorter_lsp-kind"},
                         mark = "LSP",
                         forceCompletionPattern = [[\.\w*|:\w*|->\w*]],
+                    },
+                    ["skkeleton"] = {
+                        mark = "SKK",
+                        matchers = "",
+                        sorters = "",
+                        converters = "",
+                        isVolatile = true,
+                        minAutoCompleteLength = 1,
                     },
                 },
                 sourceParams = {
