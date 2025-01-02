@@ -64,9 +64,9 @@ return {
                     },
                     ["skkeleton"] = {
                         mark = "SKK",
-                        matchers = "",
-                        sorters = "",
-                        converters = "",
+                        matchers = {},
+                        sorters = {},
+                        converters = {},
                         isVolatile = true,
                         minAutoCompleteLength = 1,
                     },
