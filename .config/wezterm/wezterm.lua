@@ -1,8 +1,26 @@
-local wezterm = require 'wezterm';
-
+local wezterm = require 'wezterm'
+local wsl_domains = wezterm.default_wsl_domains()
 local config = {}
 local act = wezterm.action
-local judgeMacOS = wezterm.target_triple == "x86_64-apple-darwin" or wezterm.target_triple == "aarch64-apple-darwin"
+
+-- OS判別関数
+---- Windowsの場合はWSLをデフォルトのシェルにする
+if wezterm.target_triple == "x86_64-pc-windows-msvc" then
+  -- Windowsの場合のみ設定を適用する
+  config.default_prog = { 'wsl' }
+  config.default_cwd = "~"
+  config.win32_system_backdrop = "Acrylic"
+  config.initial_command = { 'wsl', 'cd ~' }
+end
+
+---- macOSの場合はmacOS固有の設定を適用する
+if wezterm.target_triple == "x86_64-apple-darwin" or wezterm.target_triple == "aarch64-apple-darwin" then
+  -- macOSの場合のみ設定を適用する
+  config.default_prog = { '/bin/zsh' }
+  config.default_cwd = "~"
+  -- config.initial_command = { 'cd ~' }
+  config.macos_window_background_blur = 20
+end
 
 if wezterm.config_builder then
     config = wezterm.config_builder()
@@ -19,14 +37,10 @@ config.font_size = 14.0
 -- Appearance
 config.color_scheme = "Kanagawa (Gogh)" -- 自分の好きなテーマ探す https://wezfurlong.org/wezterm/colorschemes/index.html
 config.window_background_opacity = 0.85
-if wezterm.target_triple == "x86_64-apple-darwin" or wezterm.target_triple == "aarch64-apple-darwin" then
-    config.macos_window_background_blur = 20
-elseif wezterm.target_triple == "x86_64-pc-windows-msvc" then
-    config.win32_system_backdrop = "acrylic"
-end
+-- if wezterm.target_triple == "x86_64-apple-darwin" or wezterm.target_triple == "aarch64-apple-darwin" then
 config.show_new_tab_button_in_tab_bar = false
 config.window_decorations = "RESIZE"
-config.show_close_tab_button_in_tabs = false
+-- config.show_close_tab_button_in_tabs = false
 config.show_tab_index_in_tab_bar = false
 config.tab_bar_at_bottom = true
 
