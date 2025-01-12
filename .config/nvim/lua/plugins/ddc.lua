@@ -119,6 +119,15 @@ return {
     {
         "neovim/nvim-lspconfig",
         lazy = false,
+        config = function()
+            local lspconfig = require("lspconfig")
+            local on_attach = function(client, bufnr)
+                if client.supports_method("textDocument/formatting") then
+                  vim.api.nvim_buf_set_option(bufnr, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+                  vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, { buffer = bufnr, desc = "Format document" })
+                end
+            end
+        end
     },
     {
         "jose-elias-alvarez/null-ls.nvim",
@@ -127,10 +136,16 @@ return {
             local null_ls = require("null-ls")
             null_ls.setup({
                 sources = {
-                    null_ls.builtins.formatting.stylua,
+                    -- null_ls.builtins.formatting.stylua,
                     null_ls.builtins.diagnostics.eslint,
                     null_ls.builtins.completion.spell,
                 },
+                on_attach = function(client, bufnr)
+                    if client.supports_method("textDocument/formatting") then
+                    vim.api.nvim_buf_set_option(bufnr, "formatexpr", "v:lua.vim.lsp.formatexpr()")
+                    vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, { buffer = bufnr, desc = "Format document" })
+                end
+            end
             })
         end,
     },
@@ -143,5 +158,6 @@ return {
                 handlers = {},
             })
         end,
-    }
+    },
 }
+
