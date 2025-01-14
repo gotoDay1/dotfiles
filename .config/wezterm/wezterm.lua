@@ -69,7 +69,7 @@ config.keys = {
     { key = "V", mods = "CTRL", action = act.PasteFrom("Clipboard") },
 
     -- etc
-    { key = 'l', mods = 'LEADER', action = act.ShowLauncher },
+    { key = 'L', mods = 'LEADER', action = act.ShowLauncher },
 }
 
 -- Other
