@@ -3,19 +3,6 @@ local wsl_domains = wezterm.default_wsl_domains()
 local config = {}
 local act = wezterm.action
 
--- OS判別関数
----- Windowsの場合はWSLをデフォルトのシェルにする
-if wezterm.target_triple == 'x86_64-pc-windows-msvc' then
-    -- Windowsの場合のみ設定を適用する
-    config.win32_system_backdrop = "Acrylic"
-end
-
----- macOSの場合はmacOS固有の設定を適用する
-if wezterm.target_triple == "x86_64-apple-darwin" or wezterm.target_triple == "aarch64-apple-darwin" then
-  -- macOSの場合のみ設定を適用する
-  -- config.initial_command = { 'cd ~' }
-  config.macos_window_background_blur = 20
-end
 
 if wezterm.config_builder then
     config = wezterm.config_builder()
@@ -79,7 +66,20 @@ config.hide_tab_bar_if_only_one_tab = true
 config.adjust_window_size_when_changing_font_size = false
 config.check_for_updates = false
 config.default_cwd = "~"
-config.default_domain = 'WSL:Ubuntu-24.04'
-config.wsl_domains = wsl_domains
+-- OS判別関数
+---- Windowsの場合はWSLをデフォルトのシェルにする
+if wezterm.target_triple == 'x86_64-pc-windows-msvc' then
+    -- Windowsの場合のみ設定を適用する
+    config.win32_system_backdrop = "Acrylic"
+    config.default_domain = 'WSL:Ubuntu-24.04'
+    config.wsl_domains = wsl_domains
+end
+
+---- macOSの場合はmacOS固有の設定を適用する
+if wezterm.target_triple == "x86_64-apple-darwin" or wezterm.target_triple == "aarch64-apple-darwin" then
+  -- macOSの場合のみ設定を適用する
+  -- config.initial_command = { 'cd ~' }
+  config.macos_window_background_blur = 20
+end
 
 return config
