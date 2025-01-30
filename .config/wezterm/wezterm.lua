@@ -54,9 +54,6 @@ config.keys = {
     -- Common bindings
     { key = "C", mods = "CTRL", action = act.CopyTo("Clipboard") },
     { key = "V", mods = "CTRL", action = act.PasteFrom("Clipboard") },
-
-    -- etc
-    { key = 'L', mods = 'LEADER', action = act.ShowLauncher },
 }
 
 -- Other
