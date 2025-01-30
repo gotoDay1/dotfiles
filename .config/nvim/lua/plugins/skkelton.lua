@@ -9,7 +9,22 @@ return {
                     { '~/.skk/SKK-JISYO.L', 'euc-jp'},  
                 },
             })
-
+            -- lで小文字を入力できるようにする
+            vim.fn['skkeleton#register_kanatable']("rom", { 
+                la = ぁ,
+                li = ぃ,
+                lu = ぅ,
+                le = ぇ,
+                lo = ぉ,
+                lya = ゃ,
+                lyu = ゅ,
+                lyo = ょ,
+                ltsu = っ,
+                ltu = っ,
+                l = false ,
+                comma = ，,
+                dot = ．
+            })
             -- Keymapの設定
             vim.api.nvim_set_keymap('i', '<C-k>', '<Plug>(skkeleton-toggle)', { noremap = false })
             vim.api.nvim_set_keymap('c', '<C-k>', '<Plug>(skkeleton-toggle)', { noremap = false })
