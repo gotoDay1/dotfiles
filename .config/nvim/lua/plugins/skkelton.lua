@@ -11,19 +11,21 @@ return {
             })
             -- lで小文字を入力できるようにする
             vim.fn['skkeleton#register_kanatable']("rom", { 
-                la = ぁ,
-                li = ぃ,
-                lu = ぅ,
-                le = ぇ,
-                lo = ぉ,
-                lya = ゃ,
-                lyu = ゅ,
-                lyo = ょ,
-                ltsu = っ,
-                ltu = っ,
-                l = false ,
-                comma = ，,
-                dot = ．
+                l = false,
+                ['la'] = {'ぁ',''},
+                ['li'] = {'ぃ',''},
+                ['lu'] = {'ぅ',''},
+                ['le'] = {'ぇ',''},
+                ['lo'] = {'ぉ',''},
+                ['lya'] = {'ゃ',''},
+                ['lyu'] = {'ゅ',''},
+                ['lyo'] = {'ょ',''},
+                ['lyu'] = {'ゅ',''},
+                ['lyo'] = {'ょ',''},
+                ['ltsu'] = {'っ',''},
+                ['ltu'] = {'っ',''},
+                [','] = {'，',''},
+                ['.']= {'．',''}
             })
             -- Keymapの設定
             vim.api.nvim_set_keymap('i', '<C-k>', '<Plug>(skkeleton-toggle)', { noremap = false })
