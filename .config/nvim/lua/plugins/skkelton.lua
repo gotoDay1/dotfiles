@@ -8,6 +8,7 @@ return {
                 globalDictionaries = {
                     { '~/.skk/SKK-JISYO.L', 'euc-jp'},  
                 },
+                eggLikeNewline = true,
             })
             -- lで小文字を入力できるようにする
             vim.fn['skkeleton#register_kanatable']("rom", { 
