@@ -13,7 +13,7 @@ config.font = wezterm.font_with_fallback{
     "UDEV Gothic 35NFLG",
     "HackGen35 NF"
 }
-config.font_size = 14.0
+config.font_size = 12
 
 
 -- Appearance
@@ -54,9 +54,6 @@ config.keys = {
     -- Common bindings
     { key = "C", mods = "CTRL", action = act.CopyTo("Clipboard") },
     { key = "V", mods = "CTRL", action = act.PasteFrom("Clipboard") },
-
-    -- etc
-    { key = 'L', mods = 'LEADER', action = act.ShowLauncher },
 }
 
 -- Other
