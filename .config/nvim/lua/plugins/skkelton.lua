@@ -8,6 +8,7 @@ return {
                 globalDictionaries = {
                     { '~/.skk/SKK-JISYO.L', 'euc-jp'},  
                 },
+                keepState = true,
                 eggLikeNewline = true,
             })
             -- lで小文字を入力できるようにする
