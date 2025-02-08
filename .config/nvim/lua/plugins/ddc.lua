@@ -122,7 +122,7 @@ return {
                     if client.supports_method("textDocument/formatting") then
                         vim.api.nvim_buf_set_option(bufnr, "formatexpr",
                                                     "v:lua.vim.lsp.formatexpr()")
-                        vim.keymap.set("n", "<leader>f", vim.lsp.buf.format, {
+                        vim.keymap.set("n", "<leader>fx", vim.lsp.buf.format, {
                             buffer = bufnr,
                             desc = "Format document"
                         })
