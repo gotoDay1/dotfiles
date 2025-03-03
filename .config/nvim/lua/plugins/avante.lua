@@ -6,7 +6,7 @@ return{
   version = false, -- set this if you want to always pull the latest change
   opts = {
     -- add any opts here
-    provider = "copilot",
+    provider = "openai",
     auto_suggestions_provider = "copilot",
     behaviour = {
             auto_suggestions = false,
