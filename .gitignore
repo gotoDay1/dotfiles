@@ -7,3 +7,6 @@ log.*
 lazy-lock.json
 # git にはあげないzshの設定ファイル
 .zsh/myzshrc.zsh
+# api key を含む
+.env
+.czrc

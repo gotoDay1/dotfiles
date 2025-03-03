@@ -45,3 +45,6 @@ setopt hist_ignore_dups
 # 開始と終了を記録
 setopt EXTENDED_HISTORY
 
+# APIキーを環境変数に設定
+export $(grep -v '^#' ~/.env | xargs)
+
