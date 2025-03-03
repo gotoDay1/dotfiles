@@ -9,12 +9,12 @@ if [ ! -d ~/.zsh ]; then
 fi
 slinkfiles=(.zsh/*)
 for file in "${slinkfiles[@]}"; do
-    ln -svf $PWD/$file ~/.zsh/
+    ln -sv $PWD/$file ~/.zsh/
 done
 
 slinkfiles=(.vimrc .tmux.conf)
 for file in "${slinkfiles[@]}"; do
-    ln -svf $PWD/$file ~/
+    ln -sv $PWD/$file ~/
 done
 
 cpfiles=(.zshrc)
@@ -22,9 +22,9 @@ for file in "${cpfiles[@]}";do
     cp $PWD/$file ~/
 done
 
-contents=(sheldon nvim rofi alacritty wezterm)
+contents=(sheldon nvim rofi alacritty wezterm lazygit)
 for config in "${contents[@]}"; do
-    ln -svf $PWD/.config/$config ~/.config
+    ln -sv PWD/.config/$config ~/.config
 done
 
 # 依存性チェック
@@ -48,6 +48,9 @@ if [ ! -x "$(command -v rofi)" ]; then
 fi
 if [ ! -x "$(command -v alacritty)" ]; then
     echo "alacritty is not installed"
+fi
+if [ ! -x "$(command -v lazygit)" ]; then
+    echo "lazygit is not installed"
 fi
 
 if [ ! -x "$(command -v deno)" ]; then
