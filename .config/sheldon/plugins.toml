@@ -24,6 +24,8 @@ github = "zdharma/history-search-multi-word"
 github = "mafredri/zsh-async"
 [plugins.pure]
 github = "sindresorhus/pure"
+[plugins.zsh-abbr]
+github = 'olets/zsh-abbr'
 #[plugins.zoxide]
 #github = "ajeetdsouza/zoxide"
 

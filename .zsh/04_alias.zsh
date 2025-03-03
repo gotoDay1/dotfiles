@@ -7,6 +7,7 @@ alias cp="cp -i"
 alias le="less -N"
 alias nv="nvim"
 alias vi="nvim"
+alias proot='cd $(git rev-parse --show-toplevel)'
 alias imgcat="wezterm imgcat --width=auto"
 if command -v xsel &> /dev/null; then
     alias clip="xsel --clipboard --input"
@@ -16,4 +17,3 @@ if [ $(echo $TERM) = "xterm-kitty" ]; then
     alias s="kitty +kitten ssh"
     alias ssh="TERM=XTERM /usr/bin/ssh"
 fi
-
