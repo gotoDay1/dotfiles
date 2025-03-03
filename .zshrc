@@ -18,3 +18,4 @@ fpath+=($HOME/.local/share/sheldon/repos/github.com/*)
 eval "$(sheldon source)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+abbr -S -q lg='lazygit'

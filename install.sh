@@ -24,7 +24,7 @@ done
 
 contents=(sheldon nvim rofi alacritty wezterm lazygit)
 for config in "${contents[@]}"; do
-    ln -sv PWD/.config/$config ~/.config
+    ln -sv $PWD/.config/$config ~/.config
 done
 
 # 依存性チェック
