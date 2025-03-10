@@ -40,6 +40,7 @@ local options = {
     -- etc
 	mouse = "a",
 	shell = "zsh",
+    laststatus = 3,
     updatetime = 300
 }
 
@@ -65,3 +66,5 @@ vim.filetype.add({
         pyx = "python"
     }
 })
+home = vim.fn.expand("$HOME")
+gkgpye = os.getenv("GKGPYE")
