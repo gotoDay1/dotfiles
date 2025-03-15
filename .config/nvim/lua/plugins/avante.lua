@@ -46,12 +46,12 @@ return {
             web_search_engine = {
                 provider = "google",
             },
-            mapping = {
+            mappings = {
                 sidebar = {
                   apply_all = "A",
                   apply_cursor = "a",
-                  switch_windows = '<LEADER><TAB>',
-                  reverse_switch_windows = "<LEADER><S-Tab>",
+                  reverse_switch_windows = '<C-Tab>',
+                  switch_windows = '<S-Tab>',
                 },
             },
         },
