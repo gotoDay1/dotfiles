@@ -1,9 +1,15 @@
-return{
+return {
     {
         "lambdalisue/fern.vim",
         lazy = false,
-        config = function()
-            vim.keymap.set("n", "<C-a>", ":Fern %:h -drawer -toggle -reveal=% -width=45 <CR>", {silent = true})
-        end,
-    },
+        keys = {
+            {
+                "<C-a>",
+                ":Fern %:h -drawer -toggle -reveal=% -width=45 <CR>",
+                silent = true,
+                desc = "Toggle Fern file explorer"
+            }
+        }
+        -- Vimscriptベースのプラグインなので、optsではなくkeysを使用
+    }
 }

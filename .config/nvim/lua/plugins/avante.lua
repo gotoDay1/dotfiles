@@ -4,7 +4,6 @@ return {
         event = "VeryLazy",
         version = false, -- set this if you want to always pull the latest change
         opts = {
-            -- add any opts here
             provider = "claude",
             auto_suggestions_provider = "copilot",
             behaviour = {
@@ -26,7 +25,7 @@ return {
                 model = "gpt-4o", -- $2.5/$10
                 -- model = "gpt-4o-mini", -- $0.15/$0.60
                 -- model = 'o3-mini',
-                max_tokens = 4096,
+                max_tokens = 16384,
                 temperature = 0.3,
                 api_key_name = "cmd: gpg --decrypt --quiet --batch --yes --passphrase " ..
                     gkgpye .. " " .. home ..
@@ -35,8 +34,8 @@ return {
             claude = {
                 endpoint = "https://api.anthropic.com",
                 model = "claude-3-7-sonnet-20250219", -- $3.00/$15.00
-                max_tokens = 4096,
-                temperature = 0,
+                max_tokens = 16384,
+                temperature = 0.1,
                 api_key_name = "cmd: gpg --decrypt --quiet --batch --yes --passphrase " ..
                     gkgpye .. " " .. home ..
                     "/.anthropic.key.gpg"
@@ -46,6 +45,14 @@ return {
             },
             web_search_engine = {
                 provider = "google",
+            },
+            mapping = {
+                sidebar = {
+                  apply_all = "A",
+                  apply_cursor = "a",
+                  switch_windows = '<LEADER><TAB>',
+                  reverse_switch_windows = "<LEADER><S-Tab>",
+                },
             },
         },
         -- if you want to build from source then do `make BUILD_FROM_SOURCE=true`

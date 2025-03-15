@@ -3,6 +3,7 @@
 -- Remap space as leader
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
+vim.keymap.set('n', '<Space>', '<Nop>')
 
 -- 邪魔なキーマップを無効化
 vim.api.nvim_set_keymap('i', '<Nul>', '<Nop>', { noremap = true, silent = true })
@@ -15,3 +16,11 @@ vim.api.nvim_set_keymap('i', '<Nul>', '<Nop>', { noremap = true, silent = true }
 --   term_mode = 't',
 --   command_mode = 'c',
 
+-- Normal mode
+vim.keymap.set('n', 'x', '"_x')
+vim.keymap.set('n', 'M', '%')
+vim.keymap.set('n', 'Y', 'y$')
+vim.keymap.set('n', 'b]', ':bnext<CR>')
+vim.keymap.set('n', 'b[', ':bprevious<CR>')
+vim.keymap.set('n', 'P', ']P')
+vim.keymap.set('n', 'p', ']p')
