@@ -21,6 +21,7 @@ for file in "${slinkfiles[@]}"; do
         ln -sv "$SCRIPT_DIR/$file" ~/.zsh/
     fi
 done
+ln -sv "$SCRIPT_DIR/.zshrc" ~/
 
 # ホームディレクトリに直接リンクするファイル
 echo "Linking dotfiles to home directory..."
@@ -32,18 +33,6 @@ for file in "${slinkfiles[@]}"; do
     else
         ln -sv "$SCRIPT_DIR/$file" ~/
     fi
-done
-
-# コピーするファイル
-echo "Copying files to home directory..."
-cpfiles=(.zshrc)
-for file in "${cpfiles[@]}"; do
-    target=~/"$file"
-    if [ -e "$target" ]; then
-        echo "Warning: $target already exists, creating backup..."
-        cp "$target" "$target.backup.$(date +%Y%m%d%H%M%S)"
-    fi
-    cp "$SCRIPT_DIR/$file" ~/
 done
 
 # .configディレクトリへのシンボリックリンク
@@ -95,3 +84,5 @@ fi
 
 echo "Installation completed!"
 
+# local に依存する設定のため .zshrc.localファイルの作成を促す
+echo "Please create a .zshrc.local file in your home directory for local settings."

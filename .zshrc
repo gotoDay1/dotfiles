@@ -19,3 +19,7 @@ eval "$(sheldon source)"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 abbr -S -q lg='lazygit'
+
+if [ -f ~/.zshrc.local ]; then
+    source ~/.zshrc.local
+fi
