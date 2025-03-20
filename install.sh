@@ -21,11 +21,13 @@ for file in "${slinkfiles[@]}"; do
         ln -sv "$SCRIPT_DIR/$file" ~/.zsh/
     fi
 done
-ln -sv "$SCRIPT_DIR/.zshrc" ~/
+if [ ! -e ~/.zsh/.zshrc ]; then
+    ln -sv "$SCRIPT_DIR/.zshrc" ~/.zsh/
+fi
 
 # ホームディレクトリに直接リンクするファイル
 echo "Linking dotfiles to home directory..."
-slinkfiles=(.vimrc .tmux.conf)
+slinkfiles=(.vimrc .tmux.conf .fprettify.rc)
 for file in "${slinkfiles[@]}"; do
     target=~/"$file"
     if [ -e "$target" ] || [ -L "$target" ]; then

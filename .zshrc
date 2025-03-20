@@ -24,3 +24,8 @@ abbr -S -q lzdo='lazydocker'
 if [ -f ~/.zshrc.local ]; then
     source ~/.zshrc.local
 fi
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/sg/.docker/completions $fpath)
+autoload -Uz compinit
+compinit
+# End of Docker CLI completions
