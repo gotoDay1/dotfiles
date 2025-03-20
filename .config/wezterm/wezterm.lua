@@ -56,7 +56,7 @@ config.keys = {
     { key = "V", mods = "CTRL", action = act.PasteFrom("Clipboard") },
 
     -- Command pallette
-    { key = "P", mods = "CTRL", action = act.ActivateCommandPalette },
+    { key = "p", mods = "LEADER", action = act.ActivateCommandPalette },
 }
 
 -- Other
