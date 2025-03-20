@@ -1,0 +1,6 @@
+indent=4
+strip-comments
+case=[1,2,1,1]
+strict-indent
+whitespace=2
+enable-decl
