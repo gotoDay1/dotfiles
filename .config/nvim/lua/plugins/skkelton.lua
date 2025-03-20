@@ -1,7 +1,8 @@
 return {
     {
         "vim-skk/skkeleton",
-        lazy = false,
+        -- lazy = false,
+        event = "VimEnter",
         config = function()
             -- 辞書の設定
             vim.fn['skkeleton#config']({
@@ -37,5 +38,10 @@ return {
             vim.o.statusline = vim.o.statusline .. '%{skkeleton#mode()}'
         end,
     },
+    {
+        "delphinus/skkeleton_indicator.nvim", 
+        event = "VimEnter",
+        opts = {},
+    }
 }
 
