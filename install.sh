@@ -47,7 +47,7 @@ for config in "${contents[@]}"; do
     if [ -e "$target" ] || [ -L "$target" ]; then
         echo "Warning: $target already exists. Unlink it before continuing."
         unlink "$target"
-        li -sv "$SCRIPT_DIR/.config/$config" ~/.config
+        ln -sv "$SCRIPT_DIR/.config/$config" ~/.config
     else
         ln -sv "$SCRIPT_DIR/.config/$config" ~/.config
     fi
