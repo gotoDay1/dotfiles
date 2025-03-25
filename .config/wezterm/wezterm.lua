@@ -17,8 +17,10 @@ config.font_size = 13
 
 
 -- Appearance
-config.color_scheme = "Kanagawa (Gogh)" -- 自分の好きなテーマ探す https://wezfurlong.org/wezterm/colorschemes/index.html
-config.window_background_opacity = 0.85
+-- config.color_scheme = "Kanagawa (Gogh)" -- 自分の好きなテーマ探す https://wezfurlong.org/wezterm/colorschemes/index.html
+config.color_scheme = 'Kanagawa Dragon (Gogh)'
+config.color_scheme = 'melange_dark'
+-- config.window_background_opacity = 0.85
 config.show_new_tab_button_in_tab_bar = false
 config.window_decorations = "RESIZE"
 -- config.show_close_tab_button_in_tabs = false

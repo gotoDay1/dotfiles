@@ -26,3 +26,6 @@ vim.keymap.set('n', '<Tab>', ':bnext<CR>')
 vim.keymap.set('n', '<S-Tab>', ':bprevious<CR>')
 vim.keymap.set('n', 'P', ']P')
 vim.keymap.set('n', 'p', ']p')
+
+-- Terminal mode
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
