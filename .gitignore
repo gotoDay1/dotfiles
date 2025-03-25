@@ -10,3 +10,5 @@ lazy-lock.json
 # api key を含む
 .env
 .czrc
+# lazygit
+.config/lazygit/state.toml
