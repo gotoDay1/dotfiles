@@ -1,5 +1,5 @@
 # apperance
-theme = catppuccin macchiato
+# theme = catppuccin macchiato
 font-family = "UDEV Gothic NFLG"
 font-size = 16
 background-opacity = 0.95
@@ -20,4 +20,4 @@ keybind = "ctrl+j>k=goto_split:up"
 keybind = "ctrl+j>y=copy_to_clipboard"
 keybind = "ctrl+j>p=paste_from_clipboard"
 ## tab
-keybind = "ctrl+j>t=new_tab"
+keybind = "ctrl+j>c=new_tab"

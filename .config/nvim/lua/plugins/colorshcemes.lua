@@ -1,4 +1,4 @@
-return{
+return {
     {
         "savq/melange-nvim",
         event = "UIEnter",
@@ -6,14 +6,30 @@ return{
     {
         "Mofiqul/dracula.nvim",
         event = "UIEnter",
+        -- config = function()
+        --     require("dracula").setup({
+        --         transparent_bg = true,
+        --     })
+        -- end,
     },
     {
         "rebelot/kanagawa.nvim",
         event = "UIEnter",
+        config = function()
+            require("kanagawa").setup({
+                transparent = true,
+            })
+        end,
     },
     {
         "folke/tokyonight.nvim",
         event = "UIEnter",
+        -- config = function()
+        --     require("tokyonight").setup({
+        --         style = "night",
+        --         transparent = true,
+        --     })
+        -- end,
     },
     {
         "projekt0n/github-nvim-theme",
