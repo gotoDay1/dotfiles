@@ -6,7 +6,7 @@ vim.g.maplocalleader = " "
 vim.keymap.set('n', '<Space>', '<Nop>')
 
 -- 邪魔なキーマップを無効化
-vim.api.nvim_set_keymap('i', '<Nul>', '<Nop>', { noremap = true, silent = true })
+-- vim.api.nvim_set_keymap('i', '<Nul>', '<Nop>', { noremap = true, silent = true })
 
 -- Modes
 --   normal_mode = 'n',
