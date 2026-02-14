@@ -1,0 +1,23 @@
+# apperance
+theme = catppuccin macchiato
+font-family = "UDEV Gothic NFLG"
+font-size = 16
+background-opacity = 0.95
+# key bindings
+keybind = "global:ctrl+shift+space=toggle_quick_terminal"
+keybind = "global:ctrl+shift+enter=toggle_visibility"
+## new split
+keybind = "ctrl+j>shift+l=new_split:right"
+keybind = "ctrl+j>shift+h=new_split:left"
+keybind = "ctrl+j>shift+j=new_split:down"
+keybind = "ctrl+j>shift+k=new_split:up"
+## goto split
+keybind = "ctrl+j>l=goto_split:right"
+keybind = "ctrl+j>h=goto_split:left"
+keybind = "ctrl+j>j=goto_split:down"
+keybind = "ctrl+j>k=goto_split:up"
+## copy and paste
+keybind = "ctrl+j>y=copy_to_clipboard"
+keybind = "ctrl+j>p=paste_from_clipboard"
+## tab
+keybind = "ctrl+j>t=new_tab"

@@ -31,7 +31,9 @@ slinkfiles=(.vimrc .tmux.conf .fprettify.rc)
 for file in "${slinkfiles[@]}"; do
     target=~/"$file"
     if [ -e "$target" ] || [ -L "$target" ]; then
-        echo "Warning: $target already exists, skipping..."
+        echo "Warning: $target already exists. Unlink it before continuing."
+        unlink "$target"
+        ln -sv "$SCRIPT_DIR/$file" ~/
     else
         ln -sv "$SCRIPT_DIR/$file" ~/
     fi
@@ -39,11 +41,13 @@ done
 
 # .configディレクトリへのシンボリックリンク
 echo "Linking config directories..."
-contents=(sheldon nvim rofi alacritty wezterm lazygit)
+contents=(sheldon nvim rofi alacritty wezterm lazygit yazi)
 for config in "${contents[@]}"; do
     target=~/.config/"$config"
     if [ -e "$target" ] || [ -L "$target" ]; then
-        echo "Warning: $target already exists, skipping..."
+        echo "Warning: $target already exists. Unlink it before continuing."
+        unlink "$target"
+        ln -sv "$SCRIPT_DIR/.config/$config" ~/.config
     else
         ln -sv "$SCRIPT_DIR/.config/$config" ~/.config
     fi
@@ -51,7 +55,7 @@ done
 
 # 依存性チェック
 echo "Checking dependencies..."
-dependencies=(nvim zsh cargo uv tmux rofi alacritty wezterm lazygit)
+dependencies=(nvim zsh cargo uv tmux rofi alacritty wezterm lazygit yazi)
 missing_deps=0
 
 for dep in "${dependencies[@]}"; do

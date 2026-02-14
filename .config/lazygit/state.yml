@@ -1,14 +1,10 @@
 lastupdatecheck: 0
 recentrepos:
-    - /home/gs/dotfiles
+    - /Users/sg/dotfiles
+    - /Users/sg/wrk/practice/python/fed_batch_analysis
+    - /Users/sg/wrk/HomologicalThreading
 startuppopupversion: 5
-lastversion: 0.53.0
+didshowhunkstaginghint: false
+lastversion: 0.58.1
 customcommandshistory: []
 hidecommandlog: false
-ignorewhitespaceindiffview: false
-diffcontextsize: 3
-renamesimilaritythreshold: 50
-localbranchsortorder: recency
-remotebranchsortorder: alphabetical
-gitlogorder: topo-order
-gitlogshowgraph: always

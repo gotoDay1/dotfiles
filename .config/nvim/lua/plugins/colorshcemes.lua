@@ -15,4 +15,17 @@ return{
         "folke/tokyonight.nvim",
         event = "UIEnter",
     },
+    {
+        "projekt0n/github-nvim-theme",
+        event = "UIEnter",
+    },
+    {
+        "catppuccin/nvim",
+        name = "catppuccin",
+        event = "UIEnter",
+    },
+    {
+        "ellisonleao/gruvbox.nvim",
+        event = "UIEnter",
+    },
 }
