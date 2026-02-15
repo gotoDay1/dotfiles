@@ -22,7 +22,7 @@ return{
                 },
 
                 indent = {
-                    enable = false,
+                    enable = true,
                     chars = {
                                 "│",
                                 "¦",

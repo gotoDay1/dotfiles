@@ -1,5 +1,5 @@
 # apperance
-# theme = catppuccin macchiato
+theme = Catppuccin Frappe
 font-family = "UDEV Gothic NFLG"
 font-size = 16
 background-opacity = 0.95
@@ -21,3 +21,4 @@ keybind = "ctrl+j>y=copy_to_clipboard"
 keybind = "ctrl+j>p=paste_from_clipboard"
 ## tab
 keybind = "ctrl+j>c=new_tab"
+keybind = "ctrl+j>w=toggle_tab_overview"

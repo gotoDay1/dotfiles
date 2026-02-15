@@ -1,6 +1,5 @@
 return {
-    {
-        "savq/melange-nvim",
+    { "savq/melange-nvim",
         event = "UIEnter",
     },
     {
@@ -8,8 +7,7 @@ return {
         event = "UIEnter",
         -- config = function()
         --     require("dracula").setup({
-        --         transparent_bg = true,
-        --     })
+        --         transparent_bg = true, })
         -- end,
     },
     {
@@ -39,9 +37,21 @@ return {
         "catppuccin/nvim",
         name = "catppuccin",
         event = "UIEnter",
+        config = function()
+            require("catppuccin").setup({
+                transparent_background = true,
+            })
+            vim.cmd("colorscheme catppuccin-frappe")
+        end,
     },
     {
         "ellisonleao/gruvbox.nvim",
         event = "UIEnter",
+        -- config = function()
+        --     require("gruvbox").setup({
+        --         transparent_mode = true,
+        --     })
+        --     vim.cmd("colorscheme gruvbox")
+        -- end,
     },
 }
