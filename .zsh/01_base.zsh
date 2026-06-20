@@ -48,3 +48,4 @@ setopt EXTENDED_HISTORY
 # APIキーを環境変数に設定
 export $(grep -v '^#' ~/.env | xargs)
 
+eval "$(mise activate zsh)"
