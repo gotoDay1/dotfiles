@@ -211,6 +211,7 @@ API キーなどはファイルに置かず、Bitwarden から必要なときに
 
 - プラグインマネージャーは [sheldon](https://github.com/rossmacarthur/sheldon)。プラグインは zsh-completions / zsh-autosuggestions / history-search-multi-word / zsh-abbr / zsh-syntax-highlighting
 - 読み込み順: `~/.zsh/*.zsh` → `~/.zshrc.local` → sheldon → zsh-abbr の略語 / fzf / zoxide / starship → `compinit`
+- git の補完は zsh 標準のもの (オプションやサブコマンドに説明が付く)
 - `~/.zshenv` で Ubuntu / Debian のシステム側の `compinit` を止めている (`compinit` は `~/.zshrc` で一度だけ)。rustup などが `~/.zshenv` に書き込む内容は `~/.zshenv.local` に書く
 
 起動を軽くするための工夫:
