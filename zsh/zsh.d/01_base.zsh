@@ -12,6 +12,10 @@ zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
 zstyle ':completion:*:default' menu select=1
 autoload -Uz colors && colors
 
+# -- Editor (lf などが使う) -- #
+export EDITOR=nvim
+export VISUAL=nvim
+
 # -- History -- #
 export HISTFILE=${HOME}/.zsh_history
 export HISTSIZE=1000       # メモリに保存される履歴の件数

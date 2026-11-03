@@ -55,6 +55,13 @@ Set-Alias -Name vi  -Value nvim
 function ls_eza { eza @args }
 Set-Alias -Name ls -Value ls_eza -Option AllScope -Force
 
+# lf: 閉じたときのディレクトリへ移動する（公式の lfcd.ps1 と同じ仕組み）
+function lf { lf.exe -print-last-dir @args | Set-Location }
+
+# lf などが使うエディタ
+$env:EDITOR = 'nvim'
+$env:VISUAL = 'nvim'
+
 # ------------------------------------------------------------
 #  PSReadLine
 # ------------------------------------------------------------

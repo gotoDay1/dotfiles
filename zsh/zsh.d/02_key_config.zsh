@@ -2,13 +2,8 @@
 bindkey '^P' history-beginning-search-backward
 bindkey '^N' history-beginning-search-forward
 
-# -- yazi: 終了時のディレクトリに cd する -- #
-function y() {
-    local tmp cwd
-    tmp="$(mktemp -t "yazi-cwd.XXXXX")"
-    yazi "$@" --cwd-file="$tmp"
-    if cwd="$(cat -- "$tmp")" && [ -n "$cwd" ] && [ "$cwd" != "$PWD" ]; then
-        cd -- "$cwd"
-    fi
-    rm -f -- "$tmp"
+# -- lf: 終了時のディレクトリに cd する -- #
+# `lf` を打つだけで、lf を閉じたときにそのディレクトリへ移動する (公式の lfcd と同じ仕組み)
+function lf() {
+    cd "$(command lf -print-last-dir "$@")"
 }

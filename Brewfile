@@ -21,7 +21,7 @@ brew "neovim"
 # --- TUI ---
 brew "lazygit"
 brew "lazydocker"
-brew "yazi"
+brew "lf"
 
 # --- Keyboard ---
 brew "kanata"

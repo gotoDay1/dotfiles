@@ -40,7 +40,7 @@ jobs:
           check ~/.zshrc zsh/zshrc
           check ~/.zsh/01_base.zsh zsh/zsh.d/01_base.zsh
           check ~/.tmux.conf .tmux.conf
-          for c in nvim sheldon ghostty git lazygit yazi kanata starship.toml; do
+          for c in nvim sheldon ghostty git lazygit lf kanata starship.toml; do
             check ~/.config/$c .config/$c
           done
           test -f ~/.zshrc.local
@@ -76,7 +76,7 @@ jobs:
           done
           ls ~/.cache/zsh
           for f in sheldon fzf zoxide starship; do test -s ~/.cache/zsh/$f.zsh; done
-          zsh -i -c 'whence -w z prompt_starship_precmd fzf-file-widget zsh-defer abbr'
+          zsh -i -c 'whence -w z prompt_starship_precmd fzf-file-widget zsh-defer abbr lf'
           zsh -i -c 'bindkey "^R"' | grep history-search-multi-word
 
       - name: zsh startup time
@@ -113,7 +113,7 @@ jobs:
           $expected = @{
             (Join-Path $env:LOCALAPPDATA 'nvim')    = '.config\nvim'
             (Join-Path $env:LOCALAPPDATA 'lazygit') = '.config\lazygit'
-            (Join-Path $env:APPDATA 'yazi\config')  = '.config\yazi'
+            (Join-Path $env:APPDATA 'lf')           = '.config\lf'
             (Join-Path $HOME '.config\kanata')      = '.config\kanata'
             (Join-Path $HOME '.config\git')         = '.config\git'
           }
