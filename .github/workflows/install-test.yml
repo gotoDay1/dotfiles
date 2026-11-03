@@ -55,14 +55,18 @@ jobs:
       # 実際のツールを入れて、プラグイン・キャッシュありの状態でも確認する (macOS は brew が使える)
       - name: Install shell tools
         if: runner.os == 'macOS'
-        run: brew install sheldon starship fzf zoxide
+        run: |
+          brew install sheldon starship fzf zoxide
+          sheldon lock   # プラグインの取得 (初回の CLONED などのメッセージはここで出す)
 
+      # 端末が無いと zle (行エディタ) が無効になり、fzf のスクリプトが
+      # "can't change option: zle" を出すので、script で疑似端末を割り当てて実際の端末に近づける
       - name: zsh starts without errors (with plugins, cold and cached)
         if: runner.os == 'macOS'
         run: |
           for run in cold cached; do
-            err=$(zsh -i -c exit 2>&1 >/dev/null)
-            if [ -n "$err" ]; then echo "[$run] $err"; exit 1; fi
+            out=$(script -q /dev/null zsh -i -c exit | tr -d '\r')
+            if [ -n "$out" ]; then echo "[$run] $out"; exit 1; fi
           done
           ls ~/.cache/zsh
           for f in sheldon fzf zoxide starship; do test -s ~/.cache/zsh/$f.zsh; done
