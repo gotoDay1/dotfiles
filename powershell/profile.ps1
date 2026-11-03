@@ -1,6 +1,12 @@
 # ============================================================
 #  PowerShell プロファイル
 #  起動時間を計測したいとき: $env:PROFILE_TIMING = 1 にしてから pwsh を起動
+#
+#  起動を軽くするための工夫
+#    - PSFzf はキーを初めて押したときに読み込む (遅延ロード)
+#    - starship の初期化スクリプトはファイルにキャッシュする
+#      (starship を更新すると自動で作り直す。手動で消すなら Clear-ProfileCache)
+#    - PSReadLine は pwsh が自動で読み込むので Import-Module しない
 # ============================================================
 
 $__timing = [bool]$env:PROFILE_TIMING
@@ -9,14 +15,15 @@ function __Mark($label) {
     if ($__timing) { Write-Host "$label : $($__sw.ElapsedMilliseconds)ms" }
 }
 
+$ProfileCacheDir = Join-Path $env:LOCALAPPDATA 'pwsh-profile-cache'
+
 # ------------------------------------------------------------
 #  エンコーディング（UTF-8）
-#  ※ chcp 65001 は下の設定と役割が重なるため削除
 # ------------------------------------------------------------
 $OutputEncoding = [Console]::InputEncoding = [Console]::OutputEncoding = [Text.UTF8Encoding]::new($false)
-__Mark "encoding"
 
 $env:DISPLAY = "localhost:0.0"
+__Mark "encoding"
 
 # ------------------------------------------------------------
 #  alias
@@ -31,9 +38,6 @@ Set-Alias -Name ls -Value ls_eza -Option AllScope -Force
 # ------------------------------------------------------------
 #  PSReadLine
 # ------------------------------------------------------------
-Import-Module PSReadLine
-__Mark "PSReadLine import"
-
 # emacs 風ショートカット
 Set-PSReadLineOption -EditMode Emacs
 
@@ -45,6 +49,7 @@ Set-PSReadLineKeyHandler -Key UpArrow   -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key DownArrow -Function HistorySearchForward
 Set-PSReadLineKeyHandler -Key Ctrl+p    -Function HistorySearchBackward
 Set-PSReadLineKeyHandler -Key Ctrl+n    -Function HistorySearchForward
+__Mark "PSReadLine"
 
 # ------------------------------------------------------------
 #  vi / vim でもファイル名を補完する
@@ -63,17 +68,42 @@ Register-ArgumentCompleter -Native -CommandName vi, vim -ScriptBlock {
 }
 
 # ------------------------------------------------------------
-#  fzf
+#  fzf（PSFzf を遅延ロード）
+#  Ctrl+r / Ctrl+. を初めて押したときに PSFzf を読み込み、
+#  以降は PSFzf 自身のキーバインドに置き換わる
 # ------------------------------------------------------------
-Import-Module PSFzf
-Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+.' -PSReadlineChordReverseHistory 'Ctrl+r'
-__Mark "PSFzf import"
+function __Import-PSFzf {
+    if (-not (Get-Module PSFzf)) {
+        Import-Module PSFzf
+        Set-PsFzfOption -PSReadlineChordProvider 'Ctrl+.' -PSReadlineChordReverseHistory 'Ctrl+r'
+    }
+}
+Set-PSReadLineKeyHandler -Chord 'Ctrl+r' -Description 'fzf history (lazy)' -ScriptBlock {
+    __Import-PSFzf
+    Invoke-FzfPsReadlineHandlerHistory
+}
+Set-PSReadLineKeyHandler -Chord 'Ctrl+.' -Description 'fzf provider (lazy)' -ScriptBlock {
+    __Import-PSFzf
+    Invoke-FzfPsReadlineHandlerProvider
+}
+__Mark "PSFzf (lazy)"
 
 # ------------------------------------------------------------
-#  starship（プロンプト）※最後に読み込む
+#  starship（プロンプト）
+#  `starship init powershell` は毎回 starship を 2 回起動するので、
+#  生成されるスクリプトをキャッシュして読み込む
 # ------------------------------------------------------------
-Invoke-Expression (&starship init powershell)
-__Mark "starship init"
+$__starship = Get-Command starship -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+if ($__starship) {
+    $__starshipCache = Join-Path $ProfileCacheDir 'starship-init.ps1'
+    $__cacheItem = Get-Item $__starshipCache -ErrorAction SilentlyContinue
+    if (-not $__cacheItem -or $__cacheItem.LastWriteTime -lt (Get-Item $__starship.Source).LastWriteTime) {
+        New-Item -ItemType Directory -Force $ProfileCacheDir | Out-Null
+        & $__starship.Source init powershell --print-full-init | Set-Content -Path $__starshipCache -Encoding utf8
+    }
+    . $__starshipCache
+}
+__Mark "starship"
 
 # ------------------------------------------------------------
 #  custom functions
@@ -91,4 +121,10 @@ function tmpdir {
     return $dir.FullName
 }
 
+# プロファイルのキャッシュを消す（次回起動時に作り直される）
+function Clear-ProfileCache {
+    Remove-Item -Recurse -Force $ProfileCacheDir -ErrorAction SilentlyContinue
+}
+
+Remove-Variable __starship, __starshipCache, __cacheItem -ErrorAction SilentlyContinue
 __Mark "done"
