@@ -57,4 +57,8 @@ _evalcache starship starship init zsh --print-full-init && source $REPLY
 [[ -d ~/.docker/completions ]] && fpath=(~/.docker/completions $fpath)
 autoload -Uz compinit && compinit -u
 
-[[ -n $ZPROF ]] && zprof
+# 最後のコマンドの終了ステータスが最初のプロンプトの $? になるので、
+# `[[ ... ]] && ...` (条件が偽だと 1) ではなく if を使う
+if [[ -n $ZPROF ]]; then
+    zprof
+fi
