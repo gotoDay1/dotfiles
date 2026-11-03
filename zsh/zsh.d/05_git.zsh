@@ -4,4 +4,4 @@
 fpath=(~/.zsh $fpath)
 zstyle ':completion:*:*:git:*' script ~/.zsh/git-completion.bash
 
-# プロンプトは sheldon で読み込む pure が git の状態を表示する
+# プロンプトは starship が git の状態を表示する

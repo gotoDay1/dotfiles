@@ -1,0 +1,40 @@
+# 全 OS 共通の git 設定 (~/.config/git/config)
+#
+# 名前・メールアドレスなどマシン固有の設定は ~/.gitconfig.local に書く (git 管理外)。
+# 会社のリポジトリ用の設定は ~/.gitconfig.work に書き、
+# ~/.gitconfig.local の includeIf で読み込む (templates/gitconfig.local.example を参照)。
+
+[core]
+    editor = nvim
+    quotepath = false          # 日本語のファイル名をエスケープしない
+[init]
+    defaultBranch = main
+[fetch]
+    prune = true
+[pull]
+    rebase = true
+[rebase]
+    autoStash = true
+[push]
+    autoSetupRemote = true
+[merge]
+    conflictStyle = zdiff3
+[diff]
+    algorithm = histogram
+    colorMoved = default
+[rerere]
+    enabled = true
+[alias]
+    st = status -sb
+    sw = switch
+    co = checkout
+    br = branch
+    cm = commit
+    df = diff
+    dfc = diff --cached
+    lg = log --graph --date=short --pretty=format:'%C(yellow)%h%C(reset) %C(green)%ad%C(reset) %C(blue)%an%C(reset)%C(auto)%d%C(reset) %s'
+    undo = reset --soft HEAD~1
+
+# マシン固有の設定 (最後に読み込むので上の設定を上書きできる)
+[include]
+    path = ~/.gitconfig.local

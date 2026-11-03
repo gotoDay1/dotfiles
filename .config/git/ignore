@@ -1,0 +1,8 @@
+# 全リポジトリ共通の gitignore (~/.config/git/ignore)
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+*~
+.env
+.env.local

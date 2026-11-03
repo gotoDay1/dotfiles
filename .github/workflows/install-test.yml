@@ -1,0 +1,103 @@
+name: install-test
+
+# 各 OS で実際にセットアップスクリプトを実行し、リンクが正しく作られることを確認する。
+# 2 回実行して、再実行しても壊れない (冪等) ことも確認する。
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unix:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install zsh
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y zsh
+
+      - name: install.sh (1st)
+        run: ./install.sh --no-deps
+
+      - name: install.sh (2nd, idempotent)
+        run: ./install.sh --no-deps
+
+      - name: Verify links
+        run: |
+          set -eu
+          check() {
+            if [ "$(readlink "$1")" != "$PWD/$2" ]; then
+              echo "::error::$1 -> $(readlink "$1" || echo none) (expected $PWD/$2)"
+              exit 1
+            fi
+          }
+          check ~/.zshrc zsh/zshrc
+          check ~/.zsh/01_base.zsh zsh/zsh.d/01_base.zsh
+          check ~/.tmux.conf .tmux.conf
+          for c in nvim sheldon ghostty git lazygit yazi kanata starship.toml; do
+            check ~/.config/$c .config/$c
+          done
+          test -f ~/.zshrc.local
+          test -f ~/.gitconfig.local
+          [ -z "$(ls -A ~/.dotfiles_backup 2>/dev/null)" ] || ls -R ~/.dotfiles_backup
+
+      - name: zsh starts without errors
+        run: |
+          err=$(zsh -i -c exit 2>&1 >/dev/null)
+          if [ -n "$err" ]; then echo "$err"; exit 1; fi
+
+      - name: git reads the shared config
+        run: test "$(git config --global init.defaultBranch)" = main
+
+  windows:
+    strategy:
+      fail-fast: false
+      matrix:
+        shell: [powershell, pwsh]   # Windows PowerShell 5.1 / PowerShell 7
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: ${{ matrix.shell }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install.ps1 (1st)
+        run: .\install.ps1
+
+      - name: install.ps1 (2nd, idempotent)
+        run: .\install.ps1
+
+      - name: Verify junctions and profile
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $repo = (Get-Location).Path
+          $expected = @{
+            (Join-Path $env:LOCALAPPDATA 'nvim')    = '.config\nvim'
+            (Join-Path $env:LOCALAPPDATA 'lazygit') = '.config\lazygit'
+            (Join-Path $env:APPDATA 'yazi\config')  = '.config\yazi'
+            (Join-Path $HOME '.config\kanata')      = '.config\kanata'
+            (Join-Path $HOME '.config\git')         = '.config\git'
+          }
+          foreach ($dest in $expected.Keys) {
+            $item = Get-Item $dest -Force
+            $target = @($item.Target)[0]
+            if ($item.LinkType -ne 'Junction' -or $target -ne (Join-Path $repo $expected[$dest])) {
+              throw "$dest : LinkType=$($item.LinkType) Target=$target"
+            }
+          }
+          $profilePath = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'PowerShell\Microsoft.PowerShell_profile.ps1'
+          $content = (Get-Content $profilePath -Raw).Trim()
+          if ($content -ne ". `"$(Join-Path $repo 'powershell\profile.ps1')`"") { throw "unexpected profile: $content" }
+          foreach ($f in '.gitconfig.local', '.pwsh_profile.local.ps1') {
+            if (-not (Test-Path (Join-Path $HOME $f))) { throw "$f was not created" }
+          }
+
+      - name: git reads the shared config
+        run: |
+          $v = git config --global init.defaultBranch
+          if ($v -ne 'main') { throw "init.defaultBranch = $v" }

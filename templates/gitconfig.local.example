@@ -1,0 +1,15 @@
+# ~/.gitconfig.local
+# マシン固有の git 設定 (git 管理外)。install.sh / install.ps1 実行時にこのテンプレートからコピーされる。
+
+[user]
+    name = Your Name
+    email = you@example.com
+
+# 会社のリポジトリ (例: ~/work 以下) では会社用の設定を使う (gitdir/i は大文字小文字を区別しない)
+# ~/.gitconfig.work に [user] email = you@company.example などを書く
+[includeIf "gitdir/i:~/work/"]
+    path = ~/.gitconfig.work
+
+# Windows で改行コードを自動変換したい場合
+# [core]
+#     autocrlf = true
