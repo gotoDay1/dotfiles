@@ -14,7 +14,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y shellcheck zsh tmux lua5.4
 
       - name: shellcheck
-        run: shellcheck install.sh scripts/*.sh
+        run: shellcheck install.sh scripts/*.sh linux/*.sh macos/*.sh
 
       - name: zsh syntax
         run: |

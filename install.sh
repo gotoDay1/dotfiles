@@ -115,7 +115,7 @@ fi
 # ~/.config
 # ---------------------------------------------------------------------------
 echo "==> Linking config directories..."
-configs=(nvim sheldon wezterm alacritty ghostty lazygit yazi)
+configs=(nvim sheldon wezterm alacritty ghostty lazygit yazi kanata)
 [ "$OS" = linux ] && configs+=(rofi)
 for config in "${configs[@]}"; do
     link ".config/$config" "$HOME/.config/$config"
@@ -137,7 +137,7 @@ fi
 if [ "$CHECK_DEPS" -eq 1 ]; then
     echo "==> Checking dependencies..."
     required=(zsh nvim git sheldon tmux)
-    optional=(mise uv cargo fzf lazygit yazi wezterm ghostty alacritty deno)
+    optional=(mise uv cargo fzf lazygit yazi wezterm ghostty alacritty deno kanata)
     [ "$OS" = linux ] && optional+=(rofi xsel)
 
     missing=0
@@ -171,7 +171,7 @@ if [ "$CHECK_DEPS" -eq 1 ]; then
 
     if [ "$missing" -gt 0 ]; then
         echo "⚠️  $missing required dependencies are missing."
-        [ "$OS" = mac ] && echo "    brew bundle --file=$DOTFILES_DIR/macos/Brewfile"
+        echo "    brew bundle --file=$DOTFILES_DIR/Brewfile"
     else
         echo "🎉 All required dependencies are installed!"
     fi
@@ -186,3 +186,10 @@ if [ ! -e "$HOME/.zshrc.local" ]; then
 fi
 
 echo "Installation completed!"
+
+if command -v kanata &>/dev/null; then
+    case "$OS" in
+        mac) echo "kanata を常駐させるには: $DOTFILES_DIR/macos/setup-kanata.sh" ;;
+        linux) echo "kanata を常駐させるには: $DOTFILES_DIR/linux/setup-kanata.sh" ;;
+    esac
+fi

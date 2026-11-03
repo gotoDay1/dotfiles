@@ -1,0 +1,42 @@
+;; kanata 設定 (Windows / macOS / Linux 共通)
+;;   - CapsLock(HHKB の Ctrl 位置): タップ=Esc, ホールド=Ctrl
+;;   - Space: タップ=Space, ホールド=nav レイヤー (hjkl で矢印キー)
+;;
+;; 起動: kanata -c ~/.config/kanata/kanata.kbd
+;; 各 OS での常駐方法は README の「kanata」を参照
+
+(defcfg
+  process-unmapped-keys no
+)
+
+(defsrc
+  esc  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  caps a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lalt lmet      spc            rmet ralt
+)
+
+(defalias
+  ;; Ctrl位置(HHKBのCapsLock): タップ=Esc, ホールド=Ctrl
+  ct  (tap-hold-release 200 200 esc lctl)
+
+  ;; Space: タップ=Space, ホールド=navレイヤー
+  spc (tap-hold-release 200 200 spc (layer-while-held nav))
+)
+
+(deflayer base
+  esc  1    2    3    4    5    6    7    8    9    0    -    =    bspc
+  tab  q    w    e    r    t    y    u    i    o    p    [    ]    \
+  @ct  a    s    d    f    g    h    j    k    l    ;    '    ret
+  lsft z    x    c    v    b    n    m    ,    .    /    rsft
+  lctl lalt lmet      @spc           rmet ralt
+)
+
+(deflayer nav
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _    _    _    _    left down up   rght _    _    _
+  _    _    _    _    _    _    _    _    _    _    _    _
+  _    _    _         _              _    _
+)
