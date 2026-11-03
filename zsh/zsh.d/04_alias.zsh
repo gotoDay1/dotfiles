@@ -17,6 +17,8 @@ alias vi="nvim"
 alias le="less -N"
 alias proot='cd "$(git rev-parse --show-toplevel)"'
 alias lazygit='lazygit -ucd $HOME/.config/lazygit'
+alias lg='lazygit'
+alias lzdo='lazydocker'
 
 # -- Clipboard -- #
 if (( $+commands[pbcopy] )); then

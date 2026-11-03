@@ -1,31 +1,31 @@
-# `sheldon` configuration file
-# ----------------------------
+# sheldon の設定 (https://sheldon.cli.rs)
 #
-# You can modify this file directly or you can use one of the following
-# `sheldon` commands which are provided to assist in editing the config file:
-#
-# - `sheldon add` to add a new plugin to the config file
-# - `sheldon edit` to open up the config file in the default editor
-# - `sheldon remove` to remove a plugin from the config file
-#
-# See the documentation for more https://github.com/rossmacarthur/sheldon#readme
+# 起動を軽くするため、表示に関わらないプラグインは zsh-defer で遅延ロードする
+# (プロンプトが出たあと、入力待ちの間に読み込まれる)。
+# zsh-defer は defer テンプレートを使うプラグインより前に書くこと。
 
 shell = "zsh"
 
-[plugins.zsh-syntax-highlighting]
-github = "zsh-users/zsh-syntax-highlighting"
-[plugins.zsh-autosuggestions]
-github = "zsh-users/zsh-autosuggestions"
+[templates]
+defer = """
+zsh-defer -c "$(cat <<'SHELDON_DEFER'
+{{ hooks?.pre | nl }}{% for file in files %}source "{{ file }}"
+{% endfor %}{{ hooks?.post | nl }}SHELDON_DEFER
+)"
+"""
+
+[plugins.zsh-defer]
+github = "romkatv/zsh-defer"
+
+# 補完定義を fpath に追加するだけなので遅延させない (compinit より前に必要)
 [plugins.zsh-completions]
 github = "zsh-users/zsh-completions"
-[plugins.history-search-multi-word]
-github = "zdharma/history-search-multi-word"
-[plugins.zsh-abbr]
-github = 'olets/zsh-abbr'
-[plugins.zoxide]
-github = "ajeetdsouza/zoxide"
 
-# For example:
-#
-# [plugins.base16]
-# github = "chriskempson/base16-shell"
+[plugins.zsh-autosuggestions]
+github = "zsh-users/zsh-autosuggestions"
+apply = ["defer"]
+
+# 他のウィジェットより後に読み込む必要があるので最後に置く
+[plugins.zsh-syntax-highlighting]
+github = "zsh-users/zsh-syntax-highlighting"
+apply = ["defer"]

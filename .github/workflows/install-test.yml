@@ -52,6 +52,26 @@ jobs:
           err=$(zsh -i -c exit 2>&1 >/dev/null)
           if [ -n "$err" ]; then echo "$err"; exit 1; fi
 
+      # 実際のツールを入れて、プラグイン・キャッシュありの状態でも確認する (macOS は brew が使える)
+      - name: Install shell tools
+        if: runner.os == 'macOS'
+        run: brew install sheldon starship fzf zoxide
+
+      - name: zsh starts without errors (with plugins, cold and cached)
+        if: runner.os == 'macOS'
+        run: |
+          for run in cold cached; do
+            err=$(zsh -i -c exit 2>&1 >/dev/null)
+            if [ -n "$err" ]; then echo "[$run] $err"; exit 1; fi
+          done
+          ls ~/.cache/zsh
+          for f in sheldon fzf zoxide starship; do test -s ~/.cache/zsh/$f.zsh; done
+          zsh -i -c 'whence -w z starship_precmd fzf-history-widget zsh-defer'
+
+      - name: zsh startup time
+        if: runner.os == 'macOS'
+        run: for i in 1 2 3 4 5; do /usr/bin/time zsh -i -c exit; done
+
       # ランナーには独自の ~/.gitconfig があり同じキーを上書きすることがあるので、
       # ランナー側が設定しないキーが共通設定 (~/.config/git/config) から読まれることを確認する
       - name: git reads the shared config

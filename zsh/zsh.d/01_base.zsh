@@ -23,6 +23,4 @@ setopt hist_reduce_blanks
 setopt extended_history    # 開始と終了を記録
 
 # -- mise (ランタイムバージョン管理) -- #
-if (( $+commands[mise] )); then
-    eval "$(mise activate zsh)"
-fi
+_evalcache mise mise activate zsh && source $REPLY
