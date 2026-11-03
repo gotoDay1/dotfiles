@@ -14,7 +14,11 @@
 # -- 表示 -- #
 set hidden false          # 隠しファイルは zh で表示切り替え
 set drawbox true
-set ratios 1:2:3
+# プレビューは使わない。プレビューはカーソルを合わせたファイルの中身を読むので、
+# Box Drive などのクラウドドライブでは、通っただけのファイルがダウンロードされてしまう。
+# プレビューを切ると全ペインがディレクトリ表示になるので、親 : 現在 = 1 : 3 の 2 ペインにする。
+set preview false
+set ratios 1:3
 set scrolloff 5
 set mouse true
 set info size
