@@ -151,6 +151,7 @@ kanata は [Releases](https://github.com/jtroo/kanata/releases) から `kanata.e
 - プロンプトは [starship](https://starship.rs/)、`ls` は [eza](https://github.com/eza-community/eza)
 - PSReadLine で zsh 風の補完・履歴検索、PSFzf (`Ctrl+r` で履歴検索)
 - `$env:PROFILE_TIMING = 1` にして pwsh を起動するとプロファイルの読み込み時間を表示
+- 起動を軽くするため、PSFzf は `Ctrl+r` / `Ctrl+.` を初めて押したときに読み込み、starship の初期化スクリプトは `%LOCALAPPDATA%\pwsh-profile-cache` にキャッシュしている (starship 更新時は自動で作り直し。手動で消すなら `Clear-ProfileCache`)
 
 ### kanata
 
