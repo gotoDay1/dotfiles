@@ -238,6 +238,7 @@ API キーなどはファイルに置かず、Bitwarden から必要なときに
 - PSReadLine で zsh 風の補完・履歴検索、PSFzf (`Ctrl+r` で履歴検索)
 - `z <キーワード>` でよく使うディレクトリへ移動 (zoxide、zsh と同じ使い方)
 - `$env:PROFILE_TIMING = 1` にして pwsh を起動するとプロファイルの読み込み時間を表示
+- `install.ps1` がユーザー環境変数 `POWERSHELL_UPDATECHECK=Off` (起動時の新バージョン確認をしない) と `POWERSHELL_TELEMETRY_OPTOUT=1` (利用状況を送信しない) を設定する。pwsh の起動処理中に読まれるのでプロファイルには書けない。反映は新しく起動したプロセスから
 - 起動を軽くするため、PSFzf は `Ctrl+r` / `Ctrl+.` を初めて押したときに読み込み、starship と zoxide の初期化スクリプトは `%LOCALAPPDATA%\pwsh-profile-cache` にキャッシュしている (コマンド更新時は自動で作り直し。手動で消すなら `Clear-ProfileCache`)
 
 ### kanata

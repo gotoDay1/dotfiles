@@ -130,6 +130,10 @@ jobs:
           foreach ($f in '.gitconfig.local', '.pwsh_profile.local.ps1') {
             if (-not (Test-Path (Join-Path $HOME $f))) { throw "$f was not created" }
           }
+          foreach ($kv in @(@('POWERSHELL_UPDATECHECK', 'Off'), @('POWERSHELL_TELEMETRY_OPTOUT', '1'))) {
+            $v = [Environment]::GetEnvironmentVariable($kv[0], 'User')
+            if ($v -ne $kv[1]) { throw "user env $($kv[0]) = $v" }
+          }
 
       - name: git reads the shared config
         run: |

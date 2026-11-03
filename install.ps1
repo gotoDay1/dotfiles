@@ -126,6 +126,32 @@ if ($current -eq $stub) {
 }
 
 # ---------------------------------------------------------------------------
+# pwsh の起動を軽くするユーザー環境変数
+#   プロファイルより前 (pwsh の起動処理中) に読まれるので、プロファイルではなく
+#   ユーザー環境変数 (HKCU\Environment) に設定する。管理者権限は不要。
+#   反映されるのは、この後に起動したプロセスから
+#   (起動中の Windows Terminal などは再起動が必要)。
+#     POWERSHELL_UPDATECHECK=Off      起動時の新バージョン確認をしない
+#     POWERSHELL_TELEMETRY_OPTOUT=1   利用状況 (テレメトリ) を送信しない
+# ---------------------------------------------------------------------------
+Write-Host '==> Setting user environment variables for pwsh...'
+$userEnv = [ordered]@{
+    'POWERSHELL_UPDATECHECK'      = 'Off'
+    'POWERSHELL_TELEMETRY_OPTOUT' = '1'
+}
+foreach ($name in $userEnv.Keys) {
+    $value = $userEnv[$name]
+    if ([Environment]::GetEnvironmentVariable($name, 'User') -eq $value) {
+        Write-Host "ok     $name=$value (already set)"
+        continue
+    }
+    if ($PSCmdlet.ShouldProcess("$name=$value", 'Set user environment variable')) {
+        [Environment]::SetEnvironmentVariable($name, $value, 'User')
+    }
+    Write-Host "set    $name=$value"
+}
+
+# ---------------------------------------------------------------------------
 # マシン固有の設定 (git 管理外): 無いときだけテンプレートからコピー
 # ---------------------------------------------------------------------------
 $templates = @{
