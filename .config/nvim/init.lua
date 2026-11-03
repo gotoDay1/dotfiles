@@ -1,4 +1,2 @@
--- Split lua files
-require("base")
-require("keymaps")
-require("lazy-setup")
+-- bootstrap lazy.nvim, LazyVim and your plugins
+require("config.lazy")

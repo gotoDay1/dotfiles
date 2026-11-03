@@ -1,94 +1,183 @@
 #!/usr/bin/env bash
+#
+# dotfiles installer
+#
+#   ./install.sh            シンボリックリンクを作成し、依存関係をチェックする
+#   ./install.sh --dry-run  実際には何も変更せず、実行内容だけを表示する
+#   ./install.sh --no-deps  依存関係のチェックを省略する
+#
+# 既存のファイル/ディレクトリ(シンボリックリンク以外)は削除せず
+# ~/.dotfiles_backup/<日時>/ に退避してからリンクを張る。
 
-# エラー時に停止するように設定
-set -e
+set -euo pipefail
 
-# スクリプトのディレクトリを取得（どこから実行しても正しく動作するように）
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BACKUP_DIR="$HOME/.dotfiles_backup/$(date +%Y%m%d_%H%M%S)"
+DRY_RUN=0
+CHECK_DEPS=1
 
-# 必要なディレクトリの作成
-mkdir -p ~/.config
-mkdir -p ~/.zsh
-
-# .zshディレクトリ内のファイルをシンボリックリンク
-echo "Linking .zsh files..."
-slinkfiles=(.zsh/*)
-for file in "${slinkfiles[@]}"; do
-    target=~/"$file"
-    if [ -e "$target" ] || [ -L "$target" ]; then
-        echo "Warning: $target already exists, skipping..."
-    else
-        ln -sv "$SCRIPT_DIR/$file" ~/.zsh/
-    fi
+for arg in "$@"; do
+    case "$arg" in
+        -n | --dry-run) DRY_RUN=1 ;;
+        --no-deps) CHECK_DEPS=0 ;;
+        -h | --help)
+            sed -n '2,10p' "$0" | sed 's/^# \{0,1\}//'
+            exit 0
+            ;;
+        *)
+            echo "Unknown option: $arg" >&2
+            exit 1
+            ;;
+    esac
 done
-if [ ! -e ~/.zsh/.zshrc ]; then
-    ln -sv "$SCRIPT_DIR/.zshrc" ~/.zsh/
+
+case "$(uname -s)" in
+    Darwin) OS=mac ;;
+    Linux) OS=linux ;;
+    *) OS=other ;;
+esac
+
+run() {
+    if [ "$DRY_RUN" -eq 1 ]; then
+        echo "[dry-run] $*"
+    else
+        "$@"
+    fi
+}
+
+# $1: リポジトリ内のパス, $2: リンクの作成先
+link() {
+    local src="$DOTFILES_DIR/$1"
+    local dest="$2"
+
+    if [ ! -e "$src" ]; then
+        echo "⚠️  $1 not found in repository, skipping"
+        return
+    fi
+
+    if [ -L "$dest" ]; then
+        if [ "$(readlink "$dest")" = "$src" ]; then
+            echo "✔  $dest (already linked)"
+            return
+        fi
+        run rm "$dest"
+    elif [ -e "$dest" ]; then
+        echo "📦 backup: $dest -> $BACKUP_DIR/"
+        run mkdir -p "$BACKUP_DIR"
+        run mv "$dest" "$BACKUP_DIR/"
+    fi
+
+    run mkdir -p "$(dirname "$dest")"
+    run ln -s "$src" "$dest"
+    echo "🔗 $dest -> $src"
+}
+
+# ---------------------------------------------------------------------------
+# submodule (alacritty themes)
+# ---------------------------------------------------------------------------
+if [ -f "$DOTFILES_DIR/.gitmodules" ] && command -v git &>/dev/null; then
+    echo "==> Updating git submodules..."
+    run git -C "$DOTFILES_DIR" submodule update --init --recursive || true
 fi
 
-# ホームディレクトリに直接リンクするファイル
-echo "Linking dotfiles to home directory..."
-slinkfiles=(.vimrc .tmux.conf .fprettify.rc)
-for file in "${slinkfiles[@]}"; do
-    target=~/"$file"
-    if [ -e "$target" ] || [ -L "$target" ]; then
-        echo "Warning: $target already exists. Unlink it before continuing."
-        unlink "$target"
-        ln -sv "$SCRIPT_DIR/$file" ~/
-    else
-        ln -sv "$SCRIPT_DIR/$file" ~/
+# ---------------------------------------------------------------------------
+# zsh
+# ---------------------------------------------------------------------------
+echo "==> Linking zsh files..."
+link zsh/zshrc "$HOME/.zshrc"
+for file in "$DOTFILES_DIR"/zsh/zsh.d/*; do
+    link "zsh/zsh.d/$(basename "$file")" "$HOME/.zsh/$(basename "$file")"
+done
+# リポジトリから削除されたファイルへのリンク切れを掃除
+for file in "$HOME"/.zsh/*; do
+    if [ -L "$file" ] && [ ! -e "$file" ]; then
+        case "$(readlink "$file")" in
+            "$DOTFILES_DIR"/*)
+                echo "🧹 remove broken link: $file"
+                run rm "$file"
+                ;;
+        esac
     fi
 done
 
-# .configディレクトリへのシンボリックリンク
-echo "Linking config directories..."
-contents=(sheldon nvim rofi alacritty wezterm lazygit yazi ghostty)
-for config in "${contents[@]}"; do
-    target=~/.config/"$config"
-    if [ -e "$target" ] || [ -L "$target" ]; then
-        echo "Warning: $target already exists. Unlink it before continuing."
-        unlink "$target"
-        ln -sv "$SCRIPT_DIR/.config/$config" ~/.config
-    else
-        ln -sv "$SCRIPT_DIR/.config/$config" ~/.config
-    fi
+# ---------------------------------------------------------------------------
+# ホームディレクトリ直下
+# ---------------------------------------------------------------------------
+echo "==> Linking dotfiles to home directory..."
+for file in .tmux.conf .fprettify.rc; do
+    link "$file" "$HOME/$file"
 done
-
-# 依存性チェック
-echo "Checking dependencies..."
-dependencies=(nvim zsh cargo uv tmux rofi alacritty wezterm lazygit yazi)
-missing_deps=0
-
-for dep in "${dependencies[@]}"; do
-    if ! command -v "$dep" &> /dev/null; then
-        echo "❌ $dep is not installed"
-        missing_deps=$((missing_deps + 1))
-    else
-        echo "✅ $dep is installed"
-    fi
-done
-
-# Denoのインストール（存在しない場合）
-if ! command -v deno &> /dev/null; then
-    echo "❌ deno is not installed, attempting to install..."
-    curl -fsSL https://deno.land/install.sh | sh
-    if [ $? -eq 0 ]; then
-        echo "✅ deno installed successfully"
-    else
-        echo "❌ Failed to install deno"
-        missing_deps=$((missing_deps + 1))
-    fi
-else
-    echo "✅ deno is installed"
+if [ "$OS" = mac ]; then
+    link .latexmkrc_mac "$HOME/.latexmkrc"
 fi
 
-# 依存関係の状態を表示
-if [ $missing_deps -gt 0 ]; then
-    echo "⚠️ $missing_deps dependencies are missing. Please install them for full functionality."
-else
-    echo "🎉 All dependencies are installed!"
+# ---------------------------------------------------------------------------
+# ~/.config
+# ---------------------------------------------------------------------------
+echo "==> Linking config directories..."
+configs=(nvim sheldon wezterm alacritty ghostty lazygit yazi kanata)
+[ "$OS" = linux ] && configs+=(rofi)
+for config in "${configs[@]}"; do
+    link ".config/$config" "$HOME/.config/$config"
+done
+
+# ---------------------------------------------------------------------------
+# scripts
+# ---------------------------------------------------------------------------
+if [ "$OS" = linux ]; then
+    echo "==> Linking scripts..."
+    for file in "$DOTFILES_DIR"/scripts/*; do
+        link "scripts/$(basename "$file")" "$HOME/.scripts/$(basename "$file")"
+    done
+fi
+
+# ---------------------------------------------------------------------------
+# 依存関係のチェック
+# ---------------------------------------------------------------------------
+if [ "$CHECK_DEPS" -eq 1 ]; then
+    echo "==> Checking dependencies..."
+    required=(zsh nvim git sheldon tmux)
+    optional=(mise uv fzf rg fd zoxide lazygit yazi wezterm ghostty alacritty kanata)
+    [ "$OS" = linux ] && optional+=(rofi xsel)
+
+    missing=0
+    for dep in "${required[@]}"; do
+        if command -v "$dep" &>/dev/null; then
+            echo "✅ $dep"
+        else
+            echo "❌ $dep (required)"
+            missing=$((missing + 1))
+        fi
+    done
+    for dep in "${optional[@]}"; do
+        if command -v "$dep" &>/dev/null; then
+            echo "✅ $dep"
+        else
+            echo "➖ $dep (optional)"
+        fi
+    done
+
+    if [ "$missing" -gt 0 ]; then
+        echo "⚠️  $missing required dependencies are missing."
+        echo "    brew bundle --file=$DOTFILES_DIR/Brewfile"
+    else
+        echo "🎉 All required dependencies are installed!"
+    fi
+fi
+
+# ---------------------------------------------------------------------------
+# ローカル設定
+# ---------------------------------------------------------------------------
+if [ ! -e "$HOME/.zshrc.local" ]; then
+    echo "==> Creating ~/.zshrc.local from template..."
+    run cp "$DOTFILES_DIR/templates/zshrc.local.example" "$HOME/.zshrc.local"
 fi
 
 echo "Installation completed!"
 
-# local に依存する設定のため .zshrc.localファイルの作成を促す
-echo "Please create a .zshrc.local file in your home directory for local settings."
+if command -v kanata &>/dev/null; then
+    case "$OS" in
+        mac) echo "kanata を常駐させるには: $DOTFILES_DIR/macos/setup-kanata.sh" ;;
+        linux) echo "kanata を常駐させるには: $DOTFILES_DIR/linux/setup-kanata.sh" ;;
+    esac
+fi
