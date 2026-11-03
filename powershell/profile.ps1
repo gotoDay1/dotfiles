@@ -7,6 +7,8 @@
 #    - starship の初期化スクリプトはファイルにキャッシュする
 #      (starship を更新すると自動で作り直す。手動で消すなら Clear-ProfileCache)
 #    - PSReadLine は pwsh が自動で読み込むので Import-Module しない
+#
+#  マシン固有の設定は ~\.pwsh_profile.local.ps1 に書く (git 管理外、最後に読み込む)
 # ============================================================
 
 $__timing = [bool]$env:PROFILE_TIMING
@@ -16,6 +18,8 @@ function __Mark($label) {
 }
 
 $ProfileCacheDir = Join-Path $env:LOCALAPPDATA 'pwsh-profile-cache'
+# このファイルは $PROFILE から dot-source されるので、$PSScriptRoot はリポジトリの powershell\
+$DotfilesDir = Split-Path -Parent $PSScriptRoot
 
 # ------------------------------------------------------------
 #  エンコーディング（UTF-8）
@@ -90,9 +94,11 @@ __Mark "PSFzf (lazy)"
 
 # ------------------------------------------------------------
 #  starship（プロンプト）
+#  設定は zsh と共通の .config\starship.toml をリポジトリから直接読む
 #  `starship init powershell` は毎回 starship を 2 回起動するので、
 #  生成されるスクリプトをキャッシュして読み込む
 # ------------------------------------------------------------
+$env:STARSHIP_CONFIG = Join-Path $DotfilesDir '.config\starship.toml'
 $__starship = Get-Command starship -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
 if ($__starship) {
     $__starshipCache = Join-Path $ProfileCacheDir 'starship-init.ps1'
@@ -104,6 +110,56 @@ if ($__starship) {
     . $__starshipCache
 }
 __Mark "starship"
+
+# ------------------------------------------------------------
+#  Secrets (Bitwarden CLI)
+#  API キーなどは Bitwarden のセキュアメモに KEY=VALUE 形式で保存しておき、
+#  必要なときに bwenv で環境変数に読み込む。
+#    bwenv          アイテム "dotfiles-env" ($env:BW_ENV_ITEM で変更可) を読み込む
+#    bwenv <name>   指定したアイテムを読み込む
+#    bwlock         環境変数を消して Bitwarden をロックする
+#  初回だけ bw login が必要。ロックされていればマスターパスワードを聞かれる。
+# ------------------------------------------------------------
+if (-not $env:BW_ENV_ITEM) { $env:BW_ENV_ITEM = 'dotfiles-env' }
+$global:BwEnvKeys = @()
+
+function bwenv([string]$Item = $env:BW_ENV_ITEM) {
+    if (-not (Get-Command bw -ErrorAction SilentlyContinue)) {
+        Write-Error 'bwenv: bw (Bitwarden CLI) が見つかりません'; return
+    }
+
+    $status = (bw status 2>$null | ConvertFrom-Json).status
+    if ($status -eq 'unauthenticated') {
+        Write-Error 'bwenv: 先に bw login を実行してください'; return
+    }
+    if ($status -ne 'unlocked') {
+        $session = bw unlock --raw
+        if ($LASTEXITCODE -ne 0 -or -not $session) { return }
+        $env:BW_SESSION = $session
+    }
+
+    bw sync *> $null
+    $notes = bw get notes $Item
+    if ($LASTEXITCODE -ne 0) { return }
+
+    $count = 0
+    foreach ($line in ($notes -split "`r?`n")) {
+        if (-not $line -or $line.StartsWith('#') -or -not $line.Contains('=')) { continue }
+        $key, $value = $line -split '=', 2
+        Set-Item -Path "env:$key" -Value $value
+        if ($global:BwEnvKeys -notcontains $key) { $global:BwEnvKeys += $key }
+        $count++
+    }
+    Write-Host "bwenv: $Item から $count 個の環境変数を読み込みました"
+}
+
+function bwlock {
+    foreach ($key in $global:BwEnvKeys) { Remove-Item "env:$key" -ErrorAction SilentlyContinue }
+    $global:BwEnvKeys = @()
+    if (Get-Command bw -ErrorAction SilentlyContinue) { bw lock *> $null }
+    Remove-Item env:BW_SESSION -ErrorAction SilentlyContinue
+    Write-Host 'bwlock: 環境変数を消して Bitwarden をロックしました'
+}
 
 # ------------------------------------------------------------
 #  custom functions
@@ -127,4 +183,11 @@ function Clear-ProfileCache {
 }
 
 Remove-Variable __starship, __starshipCache, __cacheItem -ErrorAction SilentlyContinue
+
+# ------------------------------------------------------------
+#  マシン固有の設定（git 管理外）
+# ------------------------------------------------------------
+$__localProfile = Join-Path $HOME '.pwsh_profile.local.ps1'
+if (Test-Path $__localProfile) { . $__localProfile }
+Remove-Variable __localProfile -ErrorAction SilentlyContinue
 __Mark "done"

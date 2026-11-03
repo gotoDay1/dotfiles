@@ -74,9 +74,9 @@ if ($Packages) {
     $apps = @(
         # main
         'git', 'pwsh', 'neovim', 'fzf', 'ripgrep', 'fd', 'eza', 'zoxide',
-        'starship', 'yazi', 'uv', 'mingw',
+        'starship', 'yazi', 'uv', 'mingw', 'bitwarden-cli',
         # extras
-        'extras/lazygit', 'extras/wezterm', 'extras/kanata'
+        'extras/lazygit', 'extras/kanata'
     )
     if ($PSCmdlet.ShouldProcess(($apps -join ', '), 'scoop install')) {
         if (-not (scoop bucket list | Where-Object Name -eq 'extras')) { scoop bucket add extras }
@@ -98,7 +98,7 @@ if ($Packages) {
 # ---------------------------------------------------------------------------
 Write-Host '==> Linking config directories...'
 Link-Dir '.config\nvim'    (Join-Path $env:LOCALAPPDATA 'nvim')
-Link-Dir '.config\wezterm' (Join-Path $HOME '.config\wezterm')
+Link-Dir '.config\git'     (Join-Path $HOME '.config\git')
 Link-Dir '.config\lazygit' (Join-Path $env:LOCALAPPDATA 'lazygit')
 Link-Dir '.config\yazi'    (Join-Path $env:APPDATA 'yazi\config')
 Link-Dir '.config\kanata'  (Join-Path $HOME '.config\kanata')
@@ -123,6 +123,35 @@ if ($current -eq $stub) {
         Set-Content -Path $profilePath -Value $stub -Encoding UTF8
     }
     Write-Host "write  $profilePath -> $stub"
+}
+
+# ---------------------------------------------------------------------------
+# マシン固有の設定 (git 管理外): 無いときだけテンプレートからコピー
+# ---------------------------------------------------------------------------
+$templates = @{
+    'gitconfig.local.example'         = Join-Path $HOME '.gitconfig.local'
+    'pwsh_profile.local.ps1.example'  = Join-Path $HOME '.pwsh_profile.local.ps1'
+}
+foreach ($name in $templates.Keys) {
+    $dest = $templates[$name]
+    if (-not (Test-Path $dest)) {
+        if ($PSCmdlet.ShouldProcess($dest, 'Create from template')) {
+            Copy-Item (Join-Path $Dotfiles "templates\$name") $dest
+        }
+        Write-Host "create $dest (from templates\$name)"
+    }
+}
+
+# 削除した設定 (wezterm など) を指したまま残っているジャンクションを掃除
+$staleLinks = @(
+    (Join-Path $HOME '.config\wezterm')
+)
+foreach ($path in $staleLinks) {
+    $item = Get-Item $path -Force -ErrorAction SilentlyContinue
+    if ($item -and $item.LinkType -and -not (Test-Path (@($item.Target)[0]))) {
+        if ($PSCmdlet.ShouldProcess($path, 'Remove broken link')) { [IO.Directory]::Delete($path) }
+        Write-Host "clean  $path (broken link)"
+    }
 }
 
 # ---------------------------------------------------------------------------

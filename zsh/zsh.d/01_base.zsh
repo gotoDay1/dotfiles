@@ -22,14 +22,6 @@ setopt hist_ignore_all_dups
 setopt hist_reduce_blanks
 setopt extended_history    # 開始と終了を記録
 
-# -- Secrets (API keys など) -- #
-# ~/.env は git 管理外。KEY=VALUE 形式で記述する
-if [[ -r ~/.env ]]; then
-    set -a
-    source ~/.env
-    set +a
-fi
-
 # -- mise (ランタイムバージョン管理) -- #
 if (( $+commands[mise] )); then
     eval "$(mise activate zsh)"

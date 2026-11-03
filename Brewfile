@@ -10,6 +10,8 @@ brew "fzf"
 brew "ripgrep"
 brew "fd"
 brew "zoxide"
+brew "starship"
+brew "bitwarden-cli"
 brew "mise"
 brew "uv"
 
@@ -26,9 +28,7 @@ brew "kanata"
 
 if OS.mac?
   # --- Terminal ---
-  cask "wezterm"
   cask "ghostty"
-  cask "alacritty"
 
   # --- Fonts ---
   cask "font-udev-gothic-nf"

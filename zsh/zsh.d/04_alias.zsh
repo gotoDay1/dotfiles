@@ -17,7 +17,6 @@ alias vi="nvim"
 alias le="less -N"
 alias proot='cd "$(git rev-parse --show-toplevel)"'
 alias lazygit='lazygit -ucd $HOME/.config/lazygit'
-(( $+commands[wezterm] )) && alias imgcat="wezterm imgcat --width=auto"
 
 # -- Clipboard -- #
 if (( $+commands[pbcopy] )); then

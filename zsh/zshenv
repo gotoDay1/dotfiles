@@ -1,0 +1,9 @@
+# ~/.zshenv
+#
+# Ubuntu / Debian の /etc/zsh/zshrc は ~/.zshrc より前に compinit を実行する。
+# compinit は ~/.zshrc の最後で一度だけ実行するので、システム側の実行を止める
+# (起動が速くなり、安全でないディレクトリの確認で止まることもなくなる)。
+skip_global_compinit=1
+
+# マシン固有の設定 (rustup などが ~/.zshenv に書き込む内容はこちらへ)
+[[ -f ~/.zshenv.local ]] && source ~/.zshenv.local
