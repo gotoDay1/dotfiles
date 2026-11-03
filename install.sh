@@ -137,7 +137,7 @@ fi
 if [ "$CHECK_DEPS" -eq 1 ]; then
     echo "==> Checking dependencies..."
     required=(zsh nvim git sheldon tmux)
-    optional=(mise uv fzf rg fd lazygit yazi wezterm ghostty alacritty kanata)
+    optional=(mise uv fzf rg fd zoxide lazygit yazi wezterm ghostty alacritty kanata)
     [ "$OS" = linux ] && optional+=(rofi xsel)
 
     missing=0

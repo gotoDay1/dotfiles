@@ -9,6 +9,7 @@ brew "git"
 brew "fzf"
 brew "ripgrep"
 brew "fd"
+brew "zoxide"
 brew "mise"
 brew "uv"
 

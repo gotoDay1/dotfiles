@@ -186,6 +186,12 @@ kanata は [Releases](https://github.com/jtroo/kanata/releases) から `kanata.e
 
 ひな形は `templates/` にあります。
 
+## ブランチ運用
+
+- 普段の変更は `develop` (または作業ブランチ → `develop` への PR) に入れる
+- 安定性を確認したら `develop` → `main` の PR でマージする
+- `main` へは `develop` からの PR しか通らない (`main-guard` ワークフローでチェック)
+
 ## CI
 
 GitHub Actions で shellcheck / zsh・Lua・PowerShell の構文チェック / tmux 設定の読み込み / `install.sh --dry-run` を実行しています。
