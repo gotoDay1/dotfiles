@@ -1,34 +1,35 @@
-prompt='
-%m : %F{green}%~%f 
-$ '
-
-#export LSCOLORS=gxfxcxdxbxegedabagacad
+# ~/.zshrc
+#
+# 読み込み順:
+#   1. ~/.zsh/*.zsh   (番号順: 01_base -> 02_key_config -> 03_path -> 04_alias -> 05_git)
+#   2. ~/.zshrc.local (git 管理しないマシン固有の設定)
+#   3. sheldon        (プラグイン / プロンプトは pure)
+#   4. compinit       (補完の初期化は最後に一度だけ)
 
 ZSHHOME="${HOME}/.zsh"
 
-if [ -d $ZSHHOME -a -r $ZSHHOME -a \
-     -x $ZSHHOME ]; then
-     for i in $ZSHHOME/*; do
-         [[ ${i##} = *.zsh ]] && 
-         [ \( -f $i -o -h $i \) -a -r $i ] && . $i
-     done 
-fi
-if [ -f ~/.zshrc.local ]; then
-    echo "activate .zshrc.local"
-    source ~/.zshrc.local
-else
-    echo "NOT FOUND .zshrc.local"
+if [[ -d $ZSHHOME && -r $ZSHHOME ]]; then
+    for i in $ZSHHOME/*.zsh(N); do
+        [[ -r $i ]] && source $i
+    done
 fi
 
-fpath+=($HOME/.local/share/sheldon/repos/github.com/*)
-eval "$(sheldon source)"
+[[ -f ~/.zshrc.local ]] && source ~/.zshrc.local
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-abbr -S -q lg='lazygit'
-abbr -S -q lzdo='lazydocker'
+# -- Plugins (sheldon) -- #
+if (( $+commands[sheldon] )); then
+    fpath+=($HOME/.local/share/sheldon/repos/github.com/*(N))
+    eval "$(sheldon source)"
+fi
 
-# The following lines have been added by Docker Desktop to enable Docker CLI completions.
-fpath=(/Users/sg/.docker/completions $fpath)
-autoload -Uz compinit
-compinit
-# End of Docker CLI completions
+[[ -f ~/.fzf.zsh ]] && source ~/.fzf.zsh
+
+# -- Abbreviations (zsh-abbr) -- #
+if (( $+functions[abbr] )); then
+    abbr -S -q lg='lazygit'
+    abbr -S -q lzdo='lazydocker'
+fi
+
+# -- Completion -- #
+[[ -d ~/.docker/completions ]] && fpath=(~/.docker/completions $fpath)
+autoload -Uz compinit && compinit -u

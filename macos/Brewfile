@@ -1,0 +1,34 @@
+# brew bundle --file=macos/Brewfile
+
+# --- Shell / CLI ---
+brew "zsh"
+brew "sheldon"
+brew "tmux", args: ["HEAD"]
+brew "git"
+brew "fzf"
+brew "ripgrep"
+brew "fd"
+brew "mise"
+brew "uv"
+brew "deno"
+
+# --- Editor ---
+brew "neovim"
+
+# --- TUI ---
+brew "lazygit"
+brew "lazydocker"
+brew "yazi"
+
+# --- Terminal ---
+cask "wezterm"
+cask "ghostty"
+cask "alacritty"
+
+# --- Fonts ---
+cask "font-udev-gothic-nf"
+
+# --- Apps ---
+cask "raycast"
+cask "vivaldi"
+cask "obsidian"

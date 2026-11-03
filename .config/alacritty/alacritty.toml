@@ -27,7 +27,7 @@ bindings = [
 [general]
 # theme
 import = [
-    "~/dotfiles/.config/alacritty/themes/themes/kanagawa_wave.toml"
+    "~/.config/alacritty/themes/themes/kanagawa_wave.toml"
     ]
 
 [terminal]

@@ -1,14 +1,19 @@
-# for macOS
+# macOS
 .DS_Store
-# log ファイル
+
+# ログ
 *.log
 log.*
-# ローカルで作成されるファイル
+
+# ローカルで生成されるファイル
 lazy-lock.json
-# git にはあげないzshの設定ファイル
+.config/lazygit/state.yml
+.config/lazygit/state.toml
+
+# git に上げない zsh の設定
 .zsh/myzshrc.zsh
-# api key を含む
+.zshrc.local
+
+# API キーなどの秘密情報
 .env
 .czrc
-# lazygit
-.config/lazygit/state.toml
