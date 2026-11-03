@@ -4,7 +4,7 @@
 #
 #  起動を軽くするための工夫
 #    - PSFzf はキーを初めて押したときに読み込む (遅延ロード)
-#    - starship の初期化スクリプトはファイルにキャッシュする
+#    - starship / zoxide の初期化スクリプトはファイルにキャッシュする
 #      (starship を更新すると自動で作り直す。手動で消すなら Clear-ProfileCache)
 #    - PSReadLine は pwsh が自動で読み込むので Import-Module しない
 #
@@ -20,6 +20,22 @@ function __Mark($label) {
 $ProfileCacheDir = Join-Path $env:LOCALAPPDATA 'pwsh-profile-cache'
 # このファイルは $PROFILE から dot-source されるので、$PSScriptRoot はリポジトリの powershell\
 $DotfilesDir = Split-Path -Parent $PSScriptRoot
+
+# 初期化スクリプトをキャッシュしてそのパスを返す (コマンドが無ければ $null)。
+# コマンド本体が更新されたときだけ作り直す。
+# プロファイルのスコープで読み込むため、呼び出し側で dot-source する:
+#   $c = __Get-InitCache starship init powershell '--print-full-init'; if ($c) { . $c }
+function __Get-InitCache([string]$Command) {
+    $exe = Get-Command $Command -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
+    if (-not $exe) { return $null }
+    $cache = Join-Path $ProfileCacheDir "$Command-init.ps1"
+    $item = Get-Item $cache -ErrorAction SilentlyContinue
+    if (-not $item -or $item.Length -eq 0 -or $item.LastWriteTime -lt (Get-Item $exe.Source).LastWriteTime) {
+        New-Item -ItemType Directory -Force $ProfileCacheDir | Out-Null
+        & $exe.Source @args | Set-Content -Path $cache -Encoding utf8
+    }
+    return $cache
+}
 
 # ------------------------------------------------------------
 #  エンコーディング（UTF-8）
@@ -99,17 +115,17 @@ __Mark "PSFzf (lazy)"
 #  生成されるスクリプトをキャッシュして読み込む
 # ------------------------------------------------------------
 $env:STARSHIP_CONFIG = Join-Path $DotfilesDir '.config\starship.toml'
-$__starship = Get-Command starship -CommandType Application -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($__starship) {
-    $__starshipCache = Join-Path $ProfileCacheDir 'starship-init.ps1'
-    $__cacheItem = Get-Item $__starshipCache -ErrorAction SilentlyContinue
-    if (-not $__cacheItem -or $__cacheItem.LastWriteTime -lt (Get-Item $__starship.Source).LastWriteTime) {
-        New-Item -ItemType Directory -Force $ProfileCacheDir | Out-Null
-        & $__starship.Source init powershell --print-full-init | Set-Content -Path $__starshipCache -Encoding utf8
-    }
-    . $__starshipCache
-}
+$__cache = __Get-InitCache starship init powershell '--print-full-init'
+if ($__cache) { . $__cache }
 __Mark "starship"
+
+# ------------------------------------------------------------
+#  zoxide（z <キーワード> でよく使うディレクトリへ移動）
+#  starship の後に読み込む（プロンプトのフックに追加するため）
+# ------------------------------------------------------------
+$__cache = __Get-InitCache zoxide init powershell
+if ($__cache) { . $__cache }
+__Mark "zoxide"
 
 # ------------------------------------------------------------
 #  Secrets (Bitwarden CLI)
@@ -182,7 +198,7 @@ function Clear-ProfileCache {
     Remove-Item -Recurse -Force $ProfileCacheDir -ErrorAction SilentlyContinue
 }
 
-Remove-Variable __starship, __starshipCache, __cacheItem -ErrorAction SilentlyContinue
+Remove-Variable __cache -ErrorAction SilentlyContinue
 
 # ------------------------------------------------------------
 #  マシン固有の設定（git 管理外）

@@ -52,6 +52,37 @@ jobs:
           err=$(zsh -i -c exit 2>&1 >/dev/null)
           if [ -n "$err" ]; then echo "$err"; exit 1; fi
 
+      # 実際のツールを入れて、プラグイン・キャッシュありの状態でも確認する (macOS は brew が使える)
+      - name: Install shell tools
+        if: runner.os == 'macOS'
+        run: |
+          brew install sheldon starship fzf zoxide
+          sheldon lock   # プラグインの取得 (初回の CLONED などのメッセージはここで出す)
+
+      # 端末が無いと zle (行エディタ) が無効になり、fzf のスクリプトが
+      # "can't change option: zle" を出すので、script で疑似端末を割り当てて実際の端末に近づける。
+      # 疑似端末の出力には script 自身のエコー (^D など) が混ざるので、
+      # zsh の stderr と終了ステータスはファイルに書き出して確認する
+      - name: zsh starts without errors (with plugins, cold and cached)
+        if: runner.os == 'macOS'
+        run: |
+          for run in cold cached; do
+            script -q /dev/null sh -c 'zsh -i -c exit 2> "$1"; echo $? > "$2"' sh "$RUNNER_TEMP/zsh-err" "$RUNNER_TEMP/zsh-status" < /dev/null > /dev/null
+            if [ -s "$RUNNER_TEMP/zsh-err" ] || [ "$(cat "$RUNNER_TEMP/zsh-status")" != 0 ]; then
+              echo "[$run] exit=$(cat "$RUNNER_TEMP/zsh-status")"
+              cat "$RUNNER_TEMP/zsh-err"
+              exit 1
+            fi
+          done
+          ls ~/.cache/zsh
+          for f in sheldon fzf zoxide starship; do test -s ~/.cache/zsh/$f.zsh; done
+          zsh -i -c 'whence -w z prompt_starship_precmd fzf-file-widget zsh-defer abbr'
+          zsh -i -c 'bindkey "^R"' | grep history-search-multi-word
+
+      - name: zsh startup time
+        if: runner.os == 'macOS'
+        run: for i in 1 2 3 4 5; do /usr/bin/time zsh -i -c exit; done
+
       # ランナーには独自の ~/.gitconfig があり同じキーを上書きすることがあるので、
       # ランナー側が設定しないキーが共通設定 (~/.config/git/config) から読まれることを確認する
       - name: git reads the shared config
