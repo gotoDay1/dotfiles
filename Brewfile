@@ -11,7 +11,6 @@ brew "ripgrep"
 brew "fd"
 brew "mise"
 brew "uv"
-brew "deno"
 
 # --- Editor ---
 brew "neovim"

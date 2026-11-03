@@ -18,16 +18,25 @@ jobs:
 
       - name: zsh syntax
         run: |
-          zsh -n .zshrc
-          for f in .zsh/*.zsh; do zsh -n "$f"; done
+          zsh -n zsh/zshrc
+          for f in zsh/zsh.d/*.zsh; do zsh -n "$f"; done
 
       - name: lua syntax
         run: |
-          find .config/nvim .config/wezterm windows/nvim -name '*.lua' -print0 \
+          find .config/nvim .config/wezterm -name '*.lua' -print0 \
             | xargs -0 -n1 luac5.4 -p
 
       - name: tmux config
         run: tmux -f .tmux.conf -L ci new-session -d \; kill-server
+
+      - name: PowerShell syntax
+        shell: pwsh
+        run: |
+          foreach ($f in @('install.ps1', 'powershell/profile.ps1')) {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f), [ref]$null, [ref]$errors) | Out-Null
+            if ($errors) { $errors; exit 1 }
+          }
 
       - name: install.sh dry-run
         run: ./install.sh --dry-run --no-deps

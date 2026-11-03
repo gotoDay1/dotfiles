@@ -11,7 +11,7 @@ lazy-lock.json
 .config/lazygit/state.toml
 
 # git に上げない zsh の設定
-.zsh/myzshrc.zsh
+zsh/zsh.d/myzshrc.zsh
 .zshrc.local
 
 # API キーなどの秘密情報

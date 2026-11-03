@@ -4,7 +4,7 @@
 #
 #   ./install.sh            シンボリックリンクを作成し、依存関係をチェックする
 #   ./install.sh --dry-run  実際には何も変更せず、実行内容だけを表示する
-#   ./install.sh --no-deps  依存関係のチェック・deno の自動インストールを省略する
+#   ./install.sh --no-deps  依存関係のチェックを省略する
 #
 # 既存のファイル/ディレクトリ(シンボリックリンク以外)は削除せず
 # ~/.dotfiles_backup/<日時>/ に退避してからリンクを張る。
@@ -84,9 +84,9 @@ fi
 # zsh
 # ---------------------------------------------------------------------------
 echo "==> Linking zsh files..."
-link .zshrc "$HOME/.zshrc"
-for file in "$DOTFILES_DIR"/.zsh/*; do
-    link ".zsh/$(basename "$file")" "$HOME/.zsh/$(basename "$file")"
+link zsh/zshrc "$HOME/.zshrc"
+for file in "$DOTFILES_DIR"/zsh/zsh.d/*; do
+    link "zsh/zsh.d/$(basename "$file")" "$HOME/.zsh/$(basename "$file")"
 done
 # リポジトリから削除されたファイルへのリンク切れを掃除
 for file in "$HOME"/.zsh/*; do
@@ -137,7 +137,7 @@ fi
 if [ "$CHECK_DEPS" -eq 1 ]; then
     echo "==> Checking dependencies..."
     required=(zsh nvim git sheldon tmux)
-    optional=(mise uv cargo fzf lazygit yazi wezterm ghostty alacritty deno kanata)
+    optional=(mise uv fzf rg fd lazygit yazi wezterm ghostty alacritty kanata)
     [ "$OS" = linux ] && optional+=(rofi xsel)
 
     missing=0
@@ -156,18 +156,6 @@ if [ "$CHECK_DEPS" -eq 1 ]; then
             echo "➖ $dep (optional)"
         fi
     done
-
-    # Deno (ddc.vim / skkeleton で使用)
-    if ! command -v deno &>/dev/null && [ ! -x "$HOME/.deno/bin/deno" ]; then
-        echo "==> Installing deno..."
-        if [ "$DRY_RUN" -eq 1 ]; then
-            echo "[dry-run] curl -fsSL https://deno.land/install.sh | sh"
-        elif curl -fsSL https://deno.land/install.sh | sh; then
-            echo "✅ deno installed"
-        else
-            echo "❌ failed to install deno"
-        fi
-    fi
 
     if [ "$missing" -gt 0 ]; then
         echo "⚠️  $missing required dependencies are missing."

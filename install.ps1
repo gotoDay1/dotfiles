@@ -1,19 +1,21 @@
 # Windows 用セットアップスクリプト
 #
-#   pwsh -ExecutionPolicy Bypass -File .\windows\install.ps1             # リンク作成のみ
-#   pwsh -ExecutionPolicy Bypass -File .\windows\install.ps1 -Packages   # winget でツールも入れる
-#   pwsh -ExecutionPolicy Bypass -File .\windows\install.ps1 -WhatIf     # 実行内容の確認だけ
+#   (PowerShell 7 で実行すること)
+#   pwsh -ExecutionPolicy Bypass -File .\install.ps1             # リンク作成のみ
+#   pwsh -ExecutionPolicy Bypass -File .\install.ps1 -Packages   # winget でツールも入れる
+#   pwsh -ExecutionPolicy Bypass -File .\install.ps1 -WhatIf     # 実行内容の確認だけ
 #
 # シンボリックリンクの作成には「開発者モード」を有効にするか、管理者として実行する必要がある。
 # 既存のファイル/ディレクトリは ~\.dotfiles_backup\<日時>\ に退避する。
 
+#Requires -Version 7
 [CmdletBinding(SupportsShouldProcess)]
 param(
     [switch]$Packages
 )
 
 $ErrorActionPreference = 'Stop'
-$Dotfiles = Split-Path -Parent $PSScriptRoot
+$Dotfiles = $PSScriptRoot
 $BackupDir = Join-Path $HOME (".dotfiles_backup\" + (Get-Date -Format 'yyyyMMdd_HHmmss'))
 
 function Link-Item {
@@ -63,8 +65,8 @@ if ($Packages) {
         'junegunn.fzf'
         'BurntSushi.ripgrep.MSVC'
         'sharkdp.fd'
-        'JanDeDobbeleer.OhMyPosh'
-        'DenoLand.Deno'
+        'eza-community.eza'
+        'Starship.Starship'
         'astral-sh.uv'
     )
     foreach ($id in $ids) {
@@ -81,8 +83,8 @@ if ($Packages) {
 # リンク
 # ---------------------------------------------------------------------------
 Write-Host '==> Linking config files...'
-Link-Item 'windows\Microsoft.PowerShell_profile.ps1' $PROFILE.CurrentUserCurrentHost
-Link-Item 'windows\nvim'          (Join-Path $env:LOCALAPPDATA 'nvim')
+Link-Item 'powershell\profile.ps1' $PROFILE.CurrentUserCurrentHost
+Link-Item '.config\nvim'          (Join-Path $env:LOCALAPPDATA 'nvim')
 Link-Item '.config\wezterm'       (Join-Path $HOME '.config\wezterm')
 Link-Item '.config\lazygit'       (Join-Path $env:LOCALAPPDATA 'lazygit')
 Link-Item '.config\yazi'          (Join-Path $env:APPDATA 'yazi\config')
