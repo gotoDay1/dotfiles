@@ -8,7 +8,7 @@ macOS / Linux / Windows で使っている設定ファイル一式。
 | --- | --- | --- | --- | --- |
 | macOS | zsh | `Brewfile` | `./install.sh` | `macos/setup-kanata.sh` (LaunchDaemon) |
 | Linux | zsh | apt 等で最低限 + Homebrew on Linux (同じ `Brewfile`) | `./install.sh` | `linux/setup-kanata.sh` (systemd user) |
-| Windows | PowerShell 7 | winget (`install.ps1 -Packages`) | `.\install.ps1` | `install.ps1` がスタートアップに登録 |
+| Windows | PowerShell 7 | scoop (`install.ps1 -Packages`) | `.\install.ps1` | `install.ps1` がスタートアップに登録 |
 
 ## ディレクトリ構成
 
@@ -80,44 +80,50 @@ chsh -s "$(which zsh)"
 
 ### Windows
 
-1. 設定 > システム > 開発者向け で **開発者モード** を ON (シンボリックリンク作成のため)
-2. Git と PowerShell 7 を入れる (Windows PowerShell 5.1 は開発者モードでもシンボリックリンクに管理者権限が必要なため)
+**管理者権限・開発者モードは不要**です (会社 PC でも使えるように、シンボリックリンクと winget を使っていません)。
+
+1. 標準の Windows PowerShell を **管理者ではなく** 普通に開き、以下を実行
 
 ```powershell
-winget install --id Git.Git -e
-winget install --id Microsoft.PowerShell -e
-```
-
-3. 新しく開いた `pwsh` で以下を実行
-
-```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned    # スクリプトの実行を許可 (未設定の場合)
+Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
+scoop install git
 git clone --recursive https://github.com/gotoDay1/dotfiles.git $HOME\dotfiles
 cd $HOME\dotfiles
-pwsh -ExecutionPolicy Bypass -File .\install.ps1 -Packages
+.\install.ps1 -Packages
 ```
 
-kanata は [Releases](https://github.com/jtroo/kanata/releases) から `kanata.exe` を PATH の通った場所に置き、
-`install.ps1` を再実行するとログオン時の自動起動が登録されます。
+2. 以降は PowerShell 7 (`pwsh`) を使う
 
-`install.ps1` は以下をリンクします。
+`-Packages` を付けると scoop で以下をユーザー領域にインストールします。
 
-| リポジトリ | リンク先 |
-| --- | --- |
-| `powershell/profile.ps1` | `$PROFILE` |
-| `.config/nvim` | `%LOCALAPPDATA%\nvim` |
-| `.config/wezterm` | `~\.config\wezterm` |
-| `.config/lazygit` | `%LOCALAPPDATA%\lazygit` |
-| `.config/yazi` | `%APPDATA%\yazi\config` |
-| `.config/kanata` | `~\.config\kanata` |
+- main: git, pwsh, neovim, fzf, ripgrep, fd, eza, zoxide, starship, yazi, uv, mingw (treesitter のビルド用)
+- extras: lazygit, wezterm, kanata
+- PowerShell モジュール: PSFzf (CurrentUser)
+
+`install.ps1` は以下のように設定をつなぎます。
+
+| リポジトリ | 配置先 | 方法 |
+| --- | --- | --- |
+| `powershell/profile.ps1` | `Documents\PowerShell\Microsoft.PowerShell_profile.ps1` | リポジトリのファイルを読み込む 1 行だけを書く |
+| `.config/nvim` | `%LOCALAPPDATA%\nvim` | ジャンクション |
+| `.config/wezterm` | `~\.config\wezterm` | ジャンクション |
+| `.config/lazygit` | `%LOCALAPPDATA%\lazygit` | ジャンクション |
+| `.config/yazi` | `%APPDATA%\yazi\config` | ジャンクション |
+| `.config/kanata` | `~\.config\kanata` | ジャンクション (+ スタートアップに kanata のショートカットを作成) |
+
+ジャンクションはシンボリックリンクと違い、作成に特権が要りません (ディレクトリ専用)。
+
+会社のグループポリシーでスクリプトの実行が禁止されている場合は `Set-ExecutionPolicy` が効かないことがあります。その場合は社内の管理者に確認してください。
 
 ### セットアップスクリプトの動作
 
-どちらも何度実行しても安全です。既存のファイル/ディレクトリは **削除せず** `~/.dotfiles_backup/<日時>/` へ退避してからリンクします。
+どちらも何度実行しても安全です。既存のファイル/ディレクトリは **削除せず** `~/.dotfiles_backup/<日時>/` へ退避してから配置します。
 
 | | 確認だけ | その他 |
 | --- | --- | --- |
 | `install.sh` | `--dry-run` | `--no-deps` で依存チェックを省略 |
-| `install.ps1` | `-WhatIf` | `-Packages` で winget によるインストールも行う |
+| `install.ps1` | `-WhatIf` | `-Packages` で scoop によるインストールも行う |
 
 `install.sh` は alacritty テーマ (submodule) の取得と、`~/.zshrc.local` が無ければテンプレートからの作成も行います。
 
@@ -130,7 +136,7 @@ kanata は [Releases](https://github.com/jtroo/kanata/releases) から `kanata.e
   - カラースキーム: catppuccin latte (`lua/plugins/colorscheme.lua`)
   - Windows ではターミナルのシェルを `pwsh` に (`lua/config/options.lua`)
 - 初回起動時にプラグインが自動インストールされる。問題があれば `:checkhealth lazyvim`
-- treesitter パーサのビルドに C コンパイラが必要 (macOS: Xcode CLT / Linux: build-essential / Windows: MSVC や zig など)
+- treesitter パーサのビルドに C コンパイラが必要 (macOS: Xcode CLT / Linux: build-essential / Windows: scoop の mingw)
 
 ### zsh (macOS / Linux)
 

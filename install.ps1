@@ -1,14 +1,19 @@
-# Windows 用セットアップスクリプト
+﻿# Windows 用セットアップスクリプト
 #
-#   (PowerShell 7 で実行すること)
-#   pwsh -ExecutionPolicy Bypass -File .\install.ps1             # リンク作成のみ
-#   pwsh -ExecutionPolicy Bypass -File .\install.ps1 -Packages   # winget でツールも入れる
-#   pwsh -ExecutionPolicy Bypass -File .\install.ps1 -WhatIf     # 実行内容の確認だけ
+#   .\install.ps1              設定をリンクする
+#   .\install.ps1 -Packages    scoop でツールもインストールする
+#   .\install.ps1 -WhatIf      実行内容の確認だけ
 #
-# シンボリックリンクの作成には「開発者モード」を有効にするか、管理者として実行する必要がある。
+# 実行ポリシーで止められる場合:
+#   powershell -ExecutionPolicy Bypass -File .\install.ps1 -Packages
+#
+# 管理者権限・開発者モードは不要 (会社 PC でも使えるように)。
+#   - ディレクトリ: ジャンクション (シンボリックリンクと違い特権が要らない)
+#   - PowerShell プロファイル: リポジトリのファイルを読み込む 1 行だけのファイルを置く
+#   - パッケージ: scoop (ユーザー領域にインストールされる)
+# Windows PowerShell 5.1 / PowerShell 7 のどちらでも動く。
 # 既存のファイル/ディレクトリは ~\.dotfiles_backup\<日時>\ に退避する。
 
-#Requires -Version 7
 [CmdletBinding(SupportsShouldProcess)]
 param(
     [switch]$Packages
@@ -18,97 +23,124 @@ $ErrorActionPreference = 'Stop'
 $Dotfiles = $PSScriptRoot
 $BackupDir = Join-Path $HOME (".dotfiles_backup\" + (Get-Date -Format 'yyyyMMdd_HHmmss'))
 
-function Link-Item {
-    param([string]$Source, [string]$Dest)
+function Backup-Item([string]$Path) {
+    Write-Host "backup: $Path -> $BackupDir"
+    if ($PSCmdlet.ShouldProcess($Path, 'Backup')) {
+        New-Item -ItemType Directory -Force $BackupDir | Out-Null
+        Move-Item $Path $BackupDir
+    }
+}
 
+# リポジトリ内のディレクトリをジャンクションでつなぐ
+function Link-Dir([string]$Source, [string]$Dest) {
     $src = Join-Path $Dotfiles $Source
-    if (-not (Test-Path $src)) {
+    if (-not (Test-Path $src -PathType Container)) {
         Write-Warning "$Source not found in repository, skipping"
         return
     }
 
     $item = Get-Item $Dest -Force -ErrorAction SilentlyContinue
     if ($item) {
-        if ($item.LinkType -eq 'SymbolicLink' -and $item.Target -eq $src) {
-            Write-Host "✔  $Dest (already linked)"
+        if ($item.LinkType -and (@($item.Target)[0] -eq $src)) {
+            Write-Host "ok     $Dest (already linked)"
             return
         }
         if ($item.LinkType) {
-            if ($PSCmdlet.ShouldProcess($Dest, 'Remove old link')) { $item.Delete() }
+            # 古いリンク/ジャンクションはリンクだけ消す (中身は消えない)
+            if ($PSCmdlet.ShouldProcess($Dest, 'Remove old link')) { [IO.Directory]::Delete($Dest) }
         } else {
-            Write-Host "📦 backup: $Dest -> $BackupDir"
-            if ($PSCmdlet.ShouldProcess($Dest, 'Backup')) {
-                New-Item -ItemType Directory -Force $BackupDir | Out-Null
-                Move-Item $Dest $BackupDir
-            }
+            Backup-Item $Dest
         }
     }
 
-    if ($PSCmdlet.ShouldProcess($Dest, "Link to $src")) {
+    if ($PSCmdlet.ShouldProcess($Dest, "Junction to $src")) {
         New-Item -ItemType Directory -Force (Split-Path -Parent $Dest) | Out-Null
-        New-Item -ItemType SymbolicLink -Path $Dest -Target $src | Out-Null
+        New-Item -ItemType Junction -Path $Dest -Target $src | Out-Null
     }
-    Write-Host "🔗 $Dest -> $src"
+    Write-Host "link   $Dest -> $src"
 }
 
 # ---------------------------------------------------------------------------
-# パッケージ (winget)
+# パッケージ (scoop)
 # ---------------------------------------------------------------------------
 if ($Packages) {
-    $ids = @(
-        'Git.Git'
-        'Microsoft.PowerShell'
-        'Neovim.Neovim'
-        'wez.wezterm'
-        'JesseDuffield.lazygit'
-        'sxyazi.yazi'
-        'junegunn.fzf'
-        'BurntSushi.ripgrep.MSVC'
-        'sharkdp.fd'
-        'eza-community.eza'
-        'Starship.Starship'
-        'astral-sh.uv'
-    )
-    foreach ($id in $ids) {
-        if ($PSCmdlet.ShouldProcess($id, 'winget install')) {
-            winget install --id $id --exact --silent --accept-package-agreements --accept-source-agreements
+    if (-not (Get-Command scoop -ErrorAction SilentlyContinue)) {
+        Write-Host '==> Installing scoop...'
+        if ($PSCmdlet.ShouldProcess('scoop', 'Install')) {
+            Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression
         }
     }
-    if ($PSCmdlet.ShouldProcess('PSFzf', 'Install-Module')) {
-        Install-Module PSFzf -Scope CurrentUser -Force
+
+    $apps = @(
+        # main
+        'git', 'pwsh', 'neovim', 'fzf', 'ripgrep', 'fd', 'eza', 'zoxide',
+        'starship', 'yazi', 'uv', 'mingw',
+        # extras
+        'extras/lazygit', 'extras/wezterm', 'extras/kanata'
+    )
+    if ($PSCmdlet.ShouldProcess(($apps -join ', '), 'scoop install')) {
+        if (-not (scoop bucket list | Where-Object Name -eq 'extras')) { scoop bucket add extras }
+        scoop install @apps
+    }
+
+    # 5.1 から Install-Module すると pwsh 7 から見えない場所に入るので pwsh で入れる
+    if ($PSCmdlet.ShouldProcess('PSFzf', 'Install-Module (CurrentUser)')) {
+        if (Get-Command pwsh -ErrorAction SilentlyContinue) {
+            pwsh -NoProfile -Command 'Install-Module PSFzf -Scope CurrentUser -Force'
+        } else {
+            Write-Warning 'pwsh が見つからないため PSFzf をインストールできませんでした'
+        }
     }
 }
 
 # ---------------------------------------------------------------------------
-# リンク
+# 設定ディレクトリ
 # ---------------------------------------------------------------------------
-Write-Host '==> Linking config files...'
-Link-Item 'powershell\profile.ps1' $PROFILE.CurrentUserCurrentHost
-Link-Item '.config\nvim'          (Join-Path $env:LOCALAPPDATA 'nvim')
-Link-Item '.config\wezterm'       (Join-Path $HOME '.config\wezterm')
-Link-Item '.config\lazygit'       (Join-Path $env:LOCALAPPDATA 'lazygit')
-Link-Item '.config\yazi'          (Join-Path $env:APPDATA 'yazi\config')
-Link-Item '.config\kanata'        (Join-Path $HOME '.config\kanata')
+Write-Host '==> Linking config directories...'
+Link-Dir '.config\nvim'    (Join-Path $env:LOCALAPPDATA 'nvim')
+Link-Dir '.config\wezterm' (Join-Path $HOME '.config\wezterm')
+Link-Dir '.config\lazygit' (Join-Path $env:LOCALAPPDATA 'lazygit')
+Link-Dir '.config\yazi'    (Join-Path $env:APPDATA 'yazi\config')
+Link-Dir '.config\kanata'  (Join-Path $HOME '.config\kanata')
 
 # ---------------------------------------------------------------------------
-# kanata: ログオン時に自動起動するショートカットを作成
+# PowerShell 7 のプロファイル
+#   $PROFILE にはリポジトリの profile.ps1 を読み込む 1 行だけを書く
+#   (5.1 から実行しても pwsh 7 側のプロファイルに書き込む)
+# ---------------------------------------------------------------------------
+Write-Host '==> Setting up PowerShell profile...'
+$profilePath = Join-Path ([Environment]::GetFolderPath('MyDocuments')) 'PowerShell\Microsoft.PowerShell_profile.ps1'
+$repoProfile = Join-Path $Dotfiles 'powershell\profile.ps1'
+$stub = ". `"$repoProfile`""
+
+$current = if (Test-Path $profilePath) { "$(Get-Content $profilePath -Raw)".Trim() } else { $null }
+if ($current -eq $stub) {
+    Write-Host "ok     $profilePath (already set)"
+} else {
+    if ($current -ne $null) { Backup-Item $profilePath }
+    if ($PSCmdlet.ShouldProcess($profilePath, 'Write profile stub')) {
+        New-Item -ItemType Directory -Force (Split-Path -Parent $profilePath) | Out-Null
+        Set-Content -Path $profilePath -Value $stub -Encoding UTF8
+    }
+    Write-Host "write  $profilePath -> $stub"
+}
+
+# ---------------------------------------------------------------------------
+# kanata: ログオン時に自動起動するショートカット (スタートアップフォルダ)
 # ---------------------------------------------------------------------------
 $kanata = Get-Command kanata -ErrorAction SilentlyContinue
 if ($kanata) {
-    $startup = [Environment]::GetFolderPath('Startup')
-    $lnk = Join-Path $startup 'kanata.lnk'
+    $lnk = Join-Path ([Environment]::GetFolderPath('Startup')) 'kanata.lnk'
     if ($PSCmdlet.ShouldProcess($lnk, 'Create kanata startup shortcut')) {
-        $shell = New-Object -ComObject WScript.Shell
-        $sc = $shell.CreateShortcut($lnk)
+        $sc = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk)
         $sc.TargetPath = $kanata.Source
-        $sc.Arguments = '--cfg "' + (Join-Path $HOME '.config\kanata\kanata.kbd') + '"'
+        $sc.Arguments = '--cfg "' + (Join-Path $Dotfiles '.config\kanata\kanata.kbd') + '"'
         $sc.WindowStyle = 7  # 最小化で起動
         $sc.Save()
     }
-    Write-Host "⌨  kanata startup shortcut: $lnk"
+    Write-Host "kanata startup shortcut: $lnk"
 } else {
-    Write-Host '➖ kanata が見つかりません。https://github.com/jtroo/kanata/releases から kanata.exe を'
-    Write-Host '   PATH の通った場所 (例: ~\.local\bin) に置いてから再実行すると自動起動を設定します。'
+    Write-Host 'kanata が見つかりません (scoop install extras/kanata で入れてから再実行すると自動起動を設定します)'
 }
 
 Write-Host 'Installation completed!'
