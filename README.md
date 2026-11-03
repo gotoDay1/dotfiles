@@ -35,7 +35,7 @@ clone 先は `~/dotfiles`。`DOTFILES_DIR` / `DOTFILES_BRANCH` 環境変数で�
 │   ├── starship.toml          #   プロンプト (zsh / PowerShell 共通)
 │   ├── kanata/                #   kanata (キーリマップ)
 │   ├── lazygit/               #   lazygit
-│   ├── yazi/                  #   yazi (ファイラー)
+│   ├── lf/                    #   lf (ファイラー)
 │   ├── sheldon/               #   zsh プラグインマネージャー (macOS / Linux)
 │   ├── ghostty/               #   Ghostty                    (macOS / Linux)
 │   └── rofi/                  #   rofi                       (Linux)
@@ -115,7 +115,7 @@ cd $HOME\dotfiles
 
 `-Packages` を付けると scoop で以下をユーザー領域にインストールします。
 
-- main: git, pwsh, neovim, fzf, ripgrep, fd, eza, zoxide, starship, yazi, uv, mingw (treesitter のビルド用), bitwarden-cli
+- main: git, pwsh, neovim, fzf, ripgrep, fd, eza, zoxide, starship, lf, uv, mingw (treesitter のビルド用), bitwarden-cli
 - extras: lazygit, kanata
 - PowerShell モジュール: PSFzf (CurrentUser)
 
@@ -127,7 +127,7 @@ cd $HOME\dotfiles
 | `.config/nvim` | `%LOCALAPPDATA%\nvim` | ジャンクション |
 | `.config/git` | `~\.config\git` | ジャンクション |
 | `.config/lazygit` | `%LOCALAPPDATA%\lazygit` | ジャンクション |
-| `.config/yazi` | `%APPDATA%\yazi\config` | ジャンクション |
+| `.config/lf` | `%APPDATA%\lf` | ジャンクション |
 | `.config/kanata` | `~\.config\kanata` | ジャンクション (+ スタートアップに kanata のショートカットを作成) |
 | `.config/starship.toml` | — | `profile.ps1` が `STARSHIP_CONFIG` でリポジトリのファイルを直接指定 |
 
@@ -226,7 +226,7 @@ API キーなどはファイルに置かず、Bitwarden から必要なときに
 | `Ctrl-T` | ファイルをあいまい検索してコマンドラインに挿入 (fzf) |
 | `Alt-C` | ディレクトリをあいまい検索して移動 (fzf) |
 | `z <キーワード>` | よく使うディレクトリへ移動 (zoxide)。`zi` で候補から選択 |
-| `y` | yazi を起動し、終了時のディレクトリへ移動 |
+| `lf` | ファイラー。閉じたときのディレクトリへ移動する (詳しくは [lf](#lf-ファイラー)) |
 | `lg` / `lzdo` | lazygit / lazydocker (zsh-abbr の略語。入力すると展開される) |
 | `nv`, `vi` | nvim |
 | `proot` | git リポジトリのルートへ移動 |
@@ -240,6 +240,22 @@ API キーなどはファイルに置かず、Bitwarden から必要なときに
 - `$env:PROFILE_TIMING = 1` にして pwsh を起動するとプロファイルの読み込み時間を表示
 - `install.ps1` がユーザー環境変数 `POWERSHELL_UPDATECHECK=Off` (起動時の新バージョン確認をしない) と `POWERSHELL_TELEMETRY_OPTOUT=1` (利用状況を送信しない) を設定する。pwsh の起動処理中に読まれるのでプロファイルには書けない。反映は新しく起動したプロセスから
 - 起動を軽くするため、PSFzf は `Ctrl+r` / `Ctrl+.` を初めて押したときに読み込み、starship と zoxide の初期化スクリプトは `%LOCALAPPDATA%\pwsh-profile-cache` にキャッシュしている (コマンド更新時は自動で作り直し。手動で消すなら `Clear-ProfileCache`)
+
+### lf (ファイラー)
+
+[lf](https://github.com/gokcehan/lf) を使っています (全 OS 共通の `.config/lf/lfrc`)。シェルから `lf` で起動すると、閉じたときのディレクトリへ移動します (zsh / PowerShell の両方)。
+
+プレビューは切っています。プレビューはカーソルを合わせたファイルの中身を読むため、Box Drive などのクラウドドライブでは、通っただけのファイルがダウンロードされてしまうからです。
+
+| キー | 内容 |
+| --- | --- |
+| `m<文字>` | 今のディレクトリをブックマークに登録 (閉じても残る。保存先はマシンごと) |
+| `'<文字>` | 登録したディレクトリへ移動 (`''` で直前のディレクトリ) |
+| `"<文字>` | ブックマークを削除 |
+| `gh` / `gc` / `gd` / `gf` / `gw` | ホーム / `~/.config` / Downloads / dotfiles / `~/work` へ移動 (全マシン共通の固定ブックマーク。`lfrc` に追加できる) |
+| `/` | 検索しながら移動 |
+| `zh` | 隠しファイルの表示切り替え |
+| `e` | `$EDITOR` (nvim) で開く |
 
 ### kanata
 

@@ -74,7 +74,7 @@ if ($Packages) {
     $apps = @(
         # main
         'git', 'pwsh', 'neovim', 'fzf', 'ripgrep', 'fd', 'eza', 'zoxide',
-        'starship', 'yazi', 'uv', 'mingw', 'bitwarden-cli',
+        'starship', 'lf', 'uv', 'mingw', 'bitwarden-cli',
         # extras
         'extras/lazygit', 'extras/kanata'
     )
@@ -100,7 +100,7 @@ Write-Host '==> Linking config directories...'
 Link-Dir '.config\nvim'    (Join-Path $env:LOCALAPPDATA 'nvim')
 Link-Dir '.config\git'     (Join-Path $HOME '.config\git')
 Link-Dir '.config\lazygit' (Join-Path $env:LOCALAPPDATA 'lazygit')
-Link-Dir '.config\yazi'    (Join-Path $env:APPDATA 'yazi\config')
+Link-Dir '.config\lf'      (Join-Path $env:APPDATA 'lf')
 Link-Dir '.config\kanata'  (Join-Path $HOME '.config\kanata')
 
 # ---------------------------------------------------------------------------
@@ -171,6 +171,7 @@ foreach ($name in $templates.Keys) {
 # 削除した設定 (wezterm など) を指したまま残っているジャンクションを掃除
 $staleLinks = @(
     (Join-Path $HOME '.config\wezterm')
+    (Join-Path $env:APPDATA 'yazi\config')
 )
 foreach ($path in $staleLinks) {
     $item = Get-Item $path -Force -ErrorAction SilentlyContinue

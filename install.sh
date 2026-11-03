@@ -113,7 +113,7 @@ fi
 # ~/.config
 # ---------------------------------------------------------------------------
 echo "==> Linking config directories..."
-configs=(nvim sheldon ghostty git lazygit yazi kanata starship.toml)
+configs=(nvim sheldon ghostty git lazygit lf kanata starship.toml)
 [ "$OS" = linux ] && configs+=(rofi)
 for config in "${configs[@]}"; do
     link ".config/$config" "$HOME/.config/$config"
@@ -128,7 +128,7 @@ clean_broken_links "$HOME/.config"
 if [ "$CHECK_DEPS" -eq 1 ]; then
     echo "==> Checking dependencies..."
     required=(zsh nvim git sheldon tmux)
-    optional=(starship bw mise uv fzf rg fd zoxide lazygit yazi ghostty kanata)
+    optional=(starship bw mise uv fzf rg fd zoxide lazygit lf ghostty kanata)
     [ "$OS" = linux ] && optional+=(rofi xsel)
 
     missing=0

@@ -1,0 +1,36 @@
+# lf の設定 (全 OS 共通)
+#   macOS / Linux: ~/.config/lf/lfrc
+#   Windows      : %APPDATA%\lf\lfrc
+#
+# OS ごとにシェルが違う (sh / cmd) ので、ここではシェルコマンドを使わず
+# lf 自身のコマンドだけで書いている。
+#
+# ブックマーク (lf 標準。閉じても残る)
+#   m<文字>   今のディレクトリを登録
+#   '<文字>   登録したディレクトリへ移動 ('' で直前のディレクトリ)
+#   "<文字>   登録を削除
+#   '         を押して少し待つと登録の一覧が出る
+
+# -- 表示 -- #
+set hidden false          # 隠しファイルは zh で表示切り替え
+set drawbox true
+# プレビューは使わない。プレビューはカーソルを合わせたファイルの中身を読むので、
+# Box Drive などのクラウドドライブでは、通っただけのファイルがダウンロードされてしまう。
+# プレビューを切ると全ペインがディレクトリ表示になるので、親 : 現在 = 1 : 3 の 2 ペインにする。
+set preview false
+set ratios 1:3
+set scrolloff 5
+set mouse true
+set info size
+set dircounts true
+
+# -- 検索 -- #
+set incsearch true        # / で検索しながら移動
+set smartcase true
+
+# -- 固定のブックマーク (g + 文字。全マシン共通) -- #
+map gh cd ~
+map gc cd ~/.config
+map gd cd ~/Downloads
+map gf cd ~/dotfiles
+map gw cd ~/work
