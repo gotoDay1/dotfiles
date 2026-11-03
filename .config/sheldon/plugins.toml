@@ -26,8 +26,8 @@ github = "mafredri/zsh-async"
 github = "sindresorhus/pure"
 [plugins.zsh-abbr]
 github = 'olets/zsh-abbr'
-#[plugins.zoxide]
-#github = "ajeetdsouza/zoxide"
+[plugins.zoxide]
+github = "ajeetdsouza/zoxide"
 
 # For example:
 #

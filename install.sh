@@ -41,7 +41,7 @@ done
 
 # .configディレクトリへのシンボリックリンク
 echo "Linking config directories..."
-contents=(sheldon nvim rofi alacritty wezterm lazygit yazi)
+contents=(sheldon nvim rofi alacritty wezterm lazygit yazi ghostty)
 for config in "${contents[@]}"; do
     target=~/.config/"$config"
     if [ -e "$target" ] || [ -L "$target" ]; then

@@ -2,5 +2,3 @@
 require("base")
 require("keymaps")
 require("lazy-setup")
-require("appearance")
-

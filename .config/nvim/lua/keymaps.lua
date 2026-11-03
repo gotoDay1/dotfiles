@@ -29,3 +29,7 @@ vim.keymap.set('n', 'p', ']p')
 
 -- Terminal mode
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>')
+
+-- diagnostic keymaps
+vim.keymap.set('n', '<LEADER>e', vim.diagnostic.open_float)
+
