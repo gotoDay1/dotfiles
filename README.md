@@ -40,6 +40,7 @@ clone 先は `~/dotfiles`。`DOTFILES_DIR` / `DOTFILES_BRANCH` 環境変数で�
 │   ├── ghostty/               #   Ghostty                    (macOS / Linux)
 │   └── rofi/                  #   rofi                       (Linux)
 ├── zsh/                       # macOS / Linux
+│   ├── zshenv                 #   → ~/.zshenv
 │   ├── zshrc                  #   → ~/.zshrc
 │   └── zsh.d/                 #   → ~/.zsh/* (番号順に読み込まれる)
 ├── powershell/                # Windows
@@ -210,6 +211,7 @@ API キーなどはファイルに置かず、Bitwarden から必要なときに
 
 - プラグインマネージャーは [sheldon](https://github.com/rossmacarthur/sheldon)
 - 読み込み順: `~/.zsh/*.zsh` → `~/.zshrc.local` → sheldon → starship → `compinit`
+- `~/.zshenv` で Ubuntu / Debian のシステム側の `compinit` を止めている (`compinit` は `~/.zshrc` で一度だけ)。rustup などが `~/.zshenv` に書き込む内容は `~/.zshenv.local` に書く
 
 | 入力 | 内容 |
 | --- | --- |

@@ -36,6 +36,7 @@ jobs:
               exit 1
             fi
           }
+          check ~/.zshenv zsh/zshenv
           check ~/.zshrc zsh/zshrc
           check ~/.zsh/01_base.zsh zsh/zsh.d/01_base.zsh
           check ~/.tmux.conf .tmux.conf
@@ -51,8 +52,10 @@ jobs:
           err=$(zsh -i -c exit 2>&1 >/dev/null)
           if [ -n "$err" ]; then echo "$err"; exit 1; fi
 
+      # ランナーには独自の ~/.gitconfig があり同じキーを上書きすることがあるので、
+      # ランナー側が設定しないキーが共通設定 (~/.config/git/config) から読まれることを確認する
       - name: git reads the shared config
-        run: test "$(git config --global init.defaultBranch)" = main
+        run: git config --show-origin --get-all alias.st | grep -F "/.config/git/config"
 
   windows:
     strategy:

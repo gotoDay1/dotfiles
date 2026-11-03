@@ -91,6 +91,7 @@ clean_broken_links() {
 # zsh
 # ---------------------------------------------------------------------------
 echo "==> Linking zsh files..."
+link zsh/zshenv "$HOME/.zshenv"
 link zsh/zshrc "$HOME/.zshrc"
 for file in "$DOTFILES_DIR"/zsh/zsh.d/*; do
     link "zsh/zsh.d/$(basename "$file")" "$HOME/.zsh/$(basename "$file")"
