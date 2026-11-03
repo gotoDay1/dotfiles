@@ -66,7 +66,8 @@ jobs:
           done
           ls ~/.cache/zsh
           for f in sheldon fzf zoxide starship; do test -s ~/.cache/zsh/$f.zsh; done
-          zsh -i -c 'whence -w z starship_precmd fzf-history-widget zsh-defer'
+          zsh -i -c 'whence -w z starship_precmd fzf-file-widget zsh-defer abbr'
+          zsh -i -c 'bindkey "^R"' | grep history-search-multi-word
 
       - name: zsh startup time
         if: runner.os == 'macOS'

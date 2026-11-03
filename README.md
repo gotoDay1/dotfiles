@@ -209,26 +209,24 @@ API キーなどはファイルに置かず、Bitwarden から必要なときに
 
 ### zsh (macOS / Linux)
 
-- プラグインマネージャーは [sheldon](https://github.com/rossmacarthur/sheldon)。プラグインは最小限 (zsh-completions / zsh-autosuggestions / zsh-syntax-highlighting)
-- 読み込み順: `~/.zsh/*.zsh` → `~/.zshrc.local` → sheldon → fzf / zoxide / starship → `compinit`
+- プラグインマネージャーは [sheldon](https://github.com/rossmacarthur/sheldon)。プラグインは zsh-completions / zsh-autosuggestions / history-search-multi-word / zsh-abbr / zsh-syntax-highlighting
+- 読み込み順: `~/.zsh/*.zsh` → `~/.zshrc.local` → sheldon → zsh-abbr の略語 / fzf / zoxide / starship → `compinit`
 - `~/.zshenv` で Ubuntu / Debian のシステム側の `compinit` を止めている (`compinit` は `~/.zshrc` で一度だけ)。rustup などが `~/.zshenv` に書き込む内容は `~/.zshenv.local` に書く
 
 起動を軽くするための工夫:
 
 - autosuggestions と syntax-highlighting は [zsh-defer](https://github.com/romkatv/zsh-defer) で遅延ロード (プロンプトが出たあとに読み込む)
 - `sheldon source` / starship / fzf / zoxide / mise の初期化スクリプトを `~/.cache/zsh/` にキャッシュ。コマンドや `plugins.toml` が更新されたときだけ作り直す (手動で消すなら `zsh-cache-clear`)
-- 補完定義のチェックは 1 日 1 回だけ
-- git の補完は zsh 標準のものを使う (bash 用の補完スクリプトは削除)
 - 起動時間の内訳は `ZPROF=1 zsh -i -c exit` で確認できる
 
 | 入力 | 内容 |
 | --- | --- |
-| `Ctrl-R` | 履歴をあいまい検索 (fzf) |
+| `Ctrl-R` | 履歴を複数の単語で検索 (history-search-multi-word) |
 | `Ctrl-T` | ファイルをあいまい検索してコマンドラインに挿入 (fzf) |
 | `Alt-C` | ディレクトリをあいまい検索して移動 (fzf) |
 | `z <キーワード>` | よく使うディレクトリへ移動 (zoxide)。`zi` で候補から選択 |
 | `y` | yazi を起動し、終了時のディレクトリへ移動 |
-| `lg` / `lzdo` | lazygit / lazydocker |
+| `lg` / `lzdo` | lazygit / lazydocker (zsh-abbr の略語。入力すると展開される) |
 | `nv`, `vi` | nvim |
 | `proot` | git リポジトリのルートへ移動 |
 | `clip` | クリップボードへコピー (pbcopy / wl-copy / xsel) |

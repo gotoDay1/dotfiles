@@ -25,6 +25,13 @@ github = "zsh-users/zsh-completions"
 github = "zsh-users/zsh-autosuggestions"
 apply = ["defer"]
 
+# Ctrl-R の履歴検索 (fzf より優先するよう .zshrc でキーを割り当て直している)
+[plugins.history-search-multi-word]
+github = "zdharma/history-search-multi-word"
+
+[plugins.zsh-abbr]
+github = "olets/zsh-abbr"
+
 # 他のウィジェットより後に読み込む必要があるので最後に置く
 [plugins.zsh-syntax-highlighting]
 github = "zsh-users/zsh-syntax-highlighting"
