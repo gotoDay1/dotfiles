@@ -1,0 +1,47 @@
+name: lint
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install tools
+        run: sudo apt-get update && sudo apt-get install -y shellcheck zsh tmux lua5.4
+
+      - name: shellcheck
+        run: shellcheck install.sh bootstrap.sh linux/*.sh macos/*.sh
+
+      - name: zsh syntax
+        run: |
+          zsh -n zsh/zshrc
+          for f in zsh/zsh.d/*.zsh; do zsh -n "$f"; done
+
+      - name: lua syntax
+        run: |
+          find .config/nvim -name '*.lua' -print0 \
+            | xargs -0 -n1 luac5.4 -p
+
+      - name: toml / git config
+        run: |
+          python3 -c "import tomllib; [tomllib.load(open(f, 'rb')) for f in ['.config/starship.toml', '.config/sheldon/plugins.toml']]"
+          git config -f .config/git/config --list > /dev/null
+
+      - name: tmux config
+        run: tmux -f .tmux.conf -L ci new-session -d \; kill-server
+
+      - name: PowerShell syntax
+        shell: pwsh
+        run: |
+          foreach ($f in @('install.ps1', 'bootstrap.ps1', 'powershell/profile.ps1', 'templates/pwsh_profile.local.ps1.example')) {
+            $errors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile((Resolve-Path $f), [ref]$null, [ref]$errors) | Out-Null
+            if ($errors) { $errors; exit 1 }
+          }
+
+      - name: install.sh dry-run
+        run: ./install.sh --dry-run --no-deps

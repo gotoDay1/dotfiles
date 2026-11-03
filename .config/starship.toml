@@ -1,0 +1,65 @@
+# starship の設定 (zsh / PowerShell 共通)
+#   macOS / Linux: ~/.config/starship.toml にリンク
+#   Windows      : profile.ps1 で STARSHIP_CONFIG にこのファイルを指定
+#
+# 以前使っていた pure に近い、2 行のシンプルな見た目にしている。
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+command_timeout = 1000
+
+format = """
+$username$hostname$directory$git_branch$git_state$git_status$python$cmd_duration
+$character"""
+
+[username]
+format = '[$user]($style)@'
+style_user = 'green'
+
+[hostname]
+ssh_only = true
+format = '[$hostname]($style) '
+style = 'green'
+
+[directory]
+style = 'blue'
+truncation_length = 0
+truncate_to_repo = false
+truncation_symbol = '…/'
+
+[git_branch]
+format = '[$branch]($style) '
+style = 'bright-black'
+
+[git_state]
+format = '[$state( $progress_current/$progress_total)]($style) '
+style = 'yellow'
+
+[git_status]
+format = '[$all_status$ahead_behind]($style) '
+style = 'cyan'
+conflicted = '='
+untracked = '?'
+modified = '*'
+staged = '+'
+stashed = '≡'
+ahead = '⇡'
+behind = '⇣'
+diverged = '⇡⇣'
+deleted = '✘'
+renamed = '»'
+
+[python]
+format = '[($virtualenv )]($style)'
+style = 'bright-black'
+
+[cmd_duration]
+format = '[$duration]($style) '
+style = 'yellow'
+min_time = 5000
+
+[character]
+success_symbol = '[❯](purple)'
+error_symbol = '[❯](red)'
+vimcmd_symbol = '[❮](green)'

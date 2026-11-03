@@ -20,10 +20,6 @@ github = "zsh-users/zsh-autosuggestions"
 github = "zsh-users/zsh-completions"
 [plugins.history-search-multi-word]
 github = "zdharma/history-search-multi-word"
-[plugins.async]
-github = "mafredri/zsh-async"
-[plugins.pure]
-github = "sindresorhus/pure"
 [plugins.zsh-abbr]
 github = 'olets/zsh-abbr'
 [plugins.zoxide]
